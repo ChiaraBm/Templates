@@ -1,3 +1,20 @@
+using MoonCore.Extensions;
+using MoonCore.Helpers;
+
+Directory.CreateDirectory(PathBuilder.Dir("storage"));
+
+// Configure startup logger
+var startupLoggerFactory = new LoggerFactory();
+
+startupLoggerFactory.AddMoonCore(configuration =>
+{
+    configuration.Console.Enable = true;
+    configuration.Console.EnableAnsiMode = true;
+    configuration.FileLogging.Enable = false;
+});
+
+var startupLogger = startupLoggerFactory.CreateLogger("Startup");
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

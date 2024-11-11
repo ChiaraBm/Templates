@@ -35,44 +35,8 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-builder.Services.AddScoped(sp =>
-{
-    var httpClient = sp.GetRequiredService<HttpClient>();
-    var localStorageService = sp.GetRequiredService<LocalStorageService>();
-    var result = new HttpApiClient(httpClient);
-    
-    result.AddLocalStorageTokenAuthentication(localStorageService, async refreshToken =>
-    {
-        try
-        {
-            var httpApiClient = new HttpApiClient(httpClient);
-
-            var response = await httpApiClient.PostJson<RefreshResponse>(
-                "api/auth/refresh",
-                new RefreshRequest()
-                {
-                    RefreshToken = refreshToken
-                }
-            );
-
-            return (new TokenPair()
-            {
-                AccessToken = response.AccessToken,
-                RefreshToken = response.RefreshToken
-            }, response.ExpiresAt);
-        }
-        catch (HttpApiException)
-        {
-            return (new TokenPair()
-            {
-                AccessToken = "unset",
-                RefreshToken = "unset"
-            }, DateTime.MinValue);
-        }
-    });
-
-    return result;
-});
+builder.AddTokenAuthentication();
+builder.AddOAuth2();
 
 builder.Services.AddMoonCoreBlazorTailwind();
 builder.Services.AddScoped<LocalStorageService>();
