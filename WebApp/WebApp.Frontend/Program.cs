@@ -5,13 +5,9 @@ using MoonCore.Blazor.Services;
 using MoonCore.Blazor.Tailwind.Extensions;
 using MoonCore.Blazor.Tailwind.Forms;
 using MoonCore.Blazor.Tailwind.Forms.Components;
-using MoonCore.Exceptions;
 using MoonCore.Extensions;
 using MoonCore.Helpers;
-using MoonCore.Models;
 using WebApp.Frontend.UI;
-using WebApp.Shared.Http.Requests.Auth;
-using WebApp.Shared.Http.Responses;
 
 // Build pre run logger
 var providers = LoggerBuildHelper.BuildFromConfiguration(configuration =>

@@ -1,6 +1,8 @@
+using MoonCore.Extended.OAuth2.Consumer;
+
 namespace WebApp.ApiServer.Database.Entities;
 
-public class User
+public class User : IUserModel
 {
     public int Id { get; set; }
 
