@@ -1,0 +1,1 @@
+This package contains templates to start with new projects faster using the mooncore utilities

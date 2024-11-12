@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Chiara Baumgartner",
+  "classifications": [
+    "Web",
+    "Blazor",
+    "WebAssembly"
+  ],
+  "identity": "MoonCore.Templates.WebApp",
+  "name": "MoonCore Templates: WebApp",
+  "shortName": "mcwebapp",
+  "sourceName": "WebAppTemplate",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sources": [
+    {
+      "source": "./",
+      "target": "./",
+      "include": [
+        "**/*"
+      ],
+      "exclude": [
+        "**/[Bb]in/**",
+        "**/[Oo]bj/**",
+        "**/.template.config/**",
+        "**/*.filelist",
+        "**/*.user",
+        "**/*.lock.json",
+        "**/node_modules/**",
+        "**/storage/**",
+        "**/.idea/**",
+        "**/.idea.WebAppTemplate/**",
+        "**/style.min.css"
+      ]
+    }
+  ]
+}

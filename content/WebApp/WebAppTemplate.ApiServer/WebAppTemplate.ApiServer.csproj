@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.10"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="MoonCore" Version="1.7.5" />
+        <PackageReference Include="MoonCore.Extended" Version="1.1.8" />
+        <PackageReference Include="MoonCore.PluginFramework" Version="1.0.4" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Ben.Demystifier" Version="0.4.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\WebAppTemplate.Frontend\WebAppTemplate.Frontend.csproj" />
+      <ProjectReference Include="..\WebAppTemplate.Shared\WebAppTemplate.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Database\Migrations\" />
+      <Folder Include="Helpers\" />
+    </ItemGroup>
+
+</Project>
