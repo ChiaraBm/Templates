@@ -1,6 +1,8 @@
 ﻿@using MoonCore.Blazor.Tailwind.Components
 @using WebAppTemplate.Frontend.Services
 @using WebAppTemplate.Frontend.UI.Partials
+@using MoonCore.Blazor.Tailwind.Toasts
+@using MoonCore.Blazor.Tailwind.Modals
 
 @inherits LayoutComponentBase
 
@@ -25,6 +27,9 @@
         </div>
     </div>
 </LazyLoader>
+
+<ToastLauncher/>
+<ModalLauncher/>
 
 @code
 {
