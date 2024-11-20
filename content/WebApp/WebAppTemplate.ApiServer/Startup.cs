@@ -62,6 +62,7 @@ public class Startup
         await UseBaseMiddleware();
 
         await MapBase();
+        await MapOAuth2();
 
         await WebApplication.RunAsync();
     }
@@ -74,6 +75,8 @@ public class Startup
 
         return Task.CompletedTask;
     }
+
+    #region Base
 
     private Task RegisterBase()
     {
@@ -88,7 +91,6 @@ public class Startup
     private Task UseBase()
     {
         WebApplication.UseRouting();
-        WebApplication.UseExceptionHandler();
 
         WebApplication.UseBlazorFrameworkFiles();
         WebApplication.UseStaticFiles();
@@ -110,6 +112,8 @@ public class Startup
 
         return Task.CompletedTask;
     }
+
+    #endregion
 
     #region Configurations
 
@@ -223,6 +227,18 @@ public class Startup
         WebApplicationBuilder.Logging.AddConfiguration(
             await File.ReadAllTextAsync(logConfigPath)
         );
+        
+        // Mute exception handler middleware
+        // https://github.com/dotnet/aspnetcore/issues/19740
+        WebApplicationBuilder.Logging.AddFilter(
+            "Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddleware",
+            LogLevel.Critical
+        );
+        
+        WebApplicationBuilder.Logging.AddFilter(
+            "Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware",
+            LogLevel.Critical
+        );
     }
 
     #endregion
@@ -290,13 +306,17 @@ public class Startup
     private Task UseOAuth2()
     {
         WebApplication.UseOAuth2Authentication<User>();
+        return Task.CompletedTask;
+    }
+
+    private Task MapOAuth2()
+    {
         WebApplication.MapOAuth2Authentication<User>();
 
         if (!Configuration.Authentication.UseLocalOAuth2)
             return Task.CompletedTask;
         
         WebApplication.MapLocalOAuth2Provider<User>();
-
         return Task.CompletedTask;
     }
 
