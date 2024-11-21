@@ -91,6 +91,7 @@ public class Startup
     private Task UseBase()
     {
         WebApplication.UseRouting();
+        WebApplication.UseApiExceptionHandler();
 
         WebApplication.UseBlazorFrameworkFiles();
         WebApplication.UseStaticFiles();
