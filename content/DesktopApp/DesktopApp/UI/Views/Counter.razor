@@ -1,0 +1,14 @@
+@page "/counter"
+
+<h3>Counter</h3>
+
+<button @onclick="Click" class="btn btn-primary">You clicked me @counter times</button>
+
+@code {
+    int counter = 0;
+
+    private async Task Click()
+    {
+        counter++;
+    }
+}
