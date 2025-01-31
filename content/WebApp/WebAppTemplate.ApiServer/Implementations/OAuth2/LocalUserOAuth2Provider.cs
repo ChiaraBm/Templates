@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using MoonCore.Exceptions;
 using MoonCore.Extended.Abstractions;
 using MoonCore.Extended.Helpers;
@@ -15,24 +16,23 @@ public class LocalUserOAuth2Provider : ILocalProviderImplementation<User>
         UserRepository = userRepository;
     }
 
-    public Task SaveChanges(User model)
+    public async Task SaveChanges(User model)
     {
-        UserRepository.Update(model);
-        return Task.CompletedTask;
+        await UserRepository.Update(model);
     }
 
-    public Task<User?> LoadById(int id)
+    public async Task<User?> LoadById(int id)
     {
-        var nullableUser = UserRepository
+        var nullableUser = await UserRepository
             .Get()
-            .FirstOrDefault(x => x.Id == id);
+            .FirstOrDefaultAsync(x => x.Id == id);
 
-        return Task.FromResult(nullableUser);
+        return nullableUser;
     }
 
-    public Task<User> Login(string email, string password)
+    public async Task<User> Login(string email, string password)
     {
-        var user = UserRepository.Get().FirstOrDefault(x => x.Email == email);
+        var user = await UserRepository.Get().FirstOrDefaultAsync(x => x.Email == email);
 
         if (user == null)
             throw new HttpApiException("Invalid email or password", 400);
@@ -40,10 +40,10 @@ public class LocalUserOAuth2Provider : ILocalProviderImplementation<User>
         if(!HashHelper.Verify(password, user.Password))
             throw new HttpApiException("Invalid email or password", 400);
         
-        return Task.FromResult(user);
+        return user;
     }
 
-    public Task<User> Register(string username, string email, string password)
+    public async Task<User> Register(string username, string email, string password)
     {
         if (UserRepository.Get().Any(x => x.Username == username))
             throw new HttpApiException("A user with that username already exists", 400);
@@ -58,8 +58,8 @@ public class LocalUserOAuth2Provider : ILocalProviderImplementation<User>
             Password = HashHelper.Hash(password)
         };
 
-        var finalUser = UserRepository.Add(user);
+        var finalUser = await UserRepository.Add(user);
         
-        return Task.FromResult(finalUser);
+        return finalUser;
     }
 }

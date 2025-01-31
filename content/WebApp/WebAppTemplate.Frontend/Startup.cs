@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MoonCore.Blazor.Extensions;
 using MoonCore.Blazor.Services;
 using MoonCore.Blazor.Tailwind.Extensions;
-using MoonCore.Blazor.Tailwind.Forms;
-using MoonCore.Blazor.Tailwind.Forms.Components;
 using MoonCore.Extensions;
 using MoonCore.Helpers;
 using WebAppTemplate.Frontend.UI;
@@ -35,7 +33,6 @@ public class Startup
         await RegisterLogging();
         await RegisterBase();
         await RegisterOAuth2();
-        await RegisterFormComponents();
 
         await BuildWebAssemblyHost();
 
@@ -67,14 +64,6 @@ public class Startup
         WebAssemblyHostBuilder.AddTokenAuthentication();
         WebAssemblyHostBuilder.AddOAuth2();
 
-        return Task.CompletedTask;
-    }
-
-    private Task RegisterFormComponents()
-    {
-        FormComponentRepository.Set<string, StringComponent>();
-        FormComponentRepository.Set<int, IntComponent>();
-        
         return Task.CompletedTask;
     }
 
