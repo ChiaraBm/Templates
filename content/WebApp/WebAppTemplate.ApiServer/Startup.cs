@@ -3,19 +3,12 @@ using MoonCore.Configuration;
 using MoonCore.Extended.Abstractions;
 using MoonCore.Extended.Extensions;
 using MoonCore.Extended.Helpers;
-using MoonCore.Extended.OAuth2.Consumer;
-using MoonCore.Extended.OAuth2.Consumer.Extensions;
-using MoonCore.Extended.OAuth2.LocalProvider;
-using MoonCore.Extended.OAuth2.LocalProvider.Extensions;
-using MoonCore.Extended.OAuth2.LocalProvider.Implementations;
 using MoonCore.Extensions;
 using MoonCore.Helpers;
 using MoonCore.Services;
 using WebAppTemplate.ApiServer.Configuration;
 using WebAppTemplate.ApiServer.Database;
-using WebAppTemplate.ApiServer.Database.Entities;
 using WebAppTemplate.ApiServer.Http.Middleware;
-using WebAppTemplate.ApiServer.Implementations.OAuth2;
 
 namespace WebAppTemplate.ApiServer;
 
@@ -51,18 +44,15 @@ public class Startup
         await RegisterLogging();
         await RegisterBase();
         await RegisterDatabase();
-        await RegisterOAuth2();
 
         await BuildWebApplication();
 
         await PrepareDatabase();
 
         await UseBase();
-        await UseOAuth2();
         await UseBaseMiddleware();
 
         await MapBase();
-        await MapOAuth2();
 
         await WebApplication.RunAsync();
     }
@@ -271,54 +261,6 @@ public class Startup
         var databaseHelper = scope.ServiceProvider.GetRequiredService<DatabaseHelper>();
 
         await databaseHelper.EnsureMigrated(scope.ServiceProvider);
-    }
-
-    #endregion
-
-    #region OAuth2
-
-    private Task RegisterOAuth2()
-    {
-        WebApplicationBuilder.Services.AddOAuth2Authentication<User>(configuration =>
-        {
-            configuration.AccessSecret = Configuration.Authentication.AccessSecret;
-            configuration.RefreshSecret = Configuration.Authentication.RefreshSecret;
-            configuration.RefreshInterval = TimeSpan.FromSeconds(Configuration.Authentication.RefreshInterval);
-            configuration.RefreshDuration = TimeSpan.FromSeconds(Configuration.Authentication.RefreshDuration);
-
-            configuration.ClientId = Configuration.Authentication.ClientId;
-            configuration.ClientSecret = Configuration.Authentication.ClientSecret;
-            configuration.RedirectUri = Configuration.Authentication.RedirectUri ?? Configuration.PublicUrl;
-            configuration.AuthorizeEndpoint = Configuration.Authentication.AuthorizeEndpoint ??
-                                              Configuration.PublicUrl + "/api/_auth/oauth2/authorize";
-        });
-
-        WebApplicationBuilder.Services.AddScoped<IDataProvider<User>, LocalUserOAuth2Provider>();
-
-        if (!Configuration.Authentication.UseLocalOAuth2)
-            return Task.CompletedTask;
-
-        WebApplicationBuilder.Services.AddLocalOAuth2Provider<User>(Configuration.PublicUrl);
-        WebApplicationBuilder.Services.AddScoped<ILocalProviderImplementation<User>, LocalUserOAuth2Provider>();
-
-        return Task.CompletedTask;
-    }
-
-    private Task UseOAuth2()
-    {
-        WebApplication.UseOAuth2Authentication<User>();
-        return Task.CompletedTask;
-    }
-
-    private Task MapOAuth2()
-    {
-        WebApplication.MapOAuth2Authentication<User>();
-
-        if (!Configuration.Authentication.UseLocalOAuth2)
-            return Task.CompletedTask;
-        
-        WebApplication.MapLocalOAuth2Provider<User>();
-        return Task.CompletedTask;
     }
 
     #endregion

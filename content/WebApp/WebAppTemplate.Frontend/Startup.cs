@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MoonCore.Blazor.Extensions;
 using MoonCore.Blazor.Services;
+using MoonCore.Blazor.Tailwind.Auth;
 using MoonCore.Blazor.Tailwind.Extensions;
 using MoonCore.Extensions;
 using MoonCore.Helpers;
+using WebAppTemplate.Frontend.Services;
 using WebAppTemplate.Frontend.UI;
 
 namespace WebAppTemplate.Frontend;
@@ -32,6 +34,7 @@ public class Startup
 
         await RegisterLogging();
         await RegisterBase();
+        await RegisterAuthentication();
         await RegisterOAuth2();
 
         await BuildWebAssemblyHost();
@@ -64,6 +67,16 @@ public class Startup
         WebAssemblyHostBuilder.AddTokenAuthentication();
         WebAssemblyHostBuilder.AddOAuth2();
 
+        return Task.CompletedTask;
+    }
+
+    private Task RegisterAuthentication()
+    {
+        WebAssemblyHostBuilder.Services.AddAuthorizationCore();
+        WebAssemblyHostBuilder.Services.AddCascadingAuthenticationState();
+        
+        WebAssemblyHostBuilder.Services.AddAuthenticationStateManager<RemoteAuthStateManager>();
+        
         return Task.CompletedTask;
     }
 
