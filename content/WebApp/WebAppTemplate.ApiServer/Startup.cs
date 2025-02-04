@@ -1,21 +1,19 @@
+using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MoonCore.Configuration;
 using MoonCore.Extended.Abstractions;
 using MoonCore.Extended.Extensions;
 using MoonCore.Extended.Helpers;
-using MoonCore.Extended.OAuth2.Consumer;
-using MoonCore.Extended.OAuth2.Consumer.Extensions;
-using MoonCore.Extended.OAuth2.LocalProvider;
-using MoonCore.Extended.OAuth2.LocalProvider.Extensions;
-using MoonCore.Extended.OAuth2.LocalProvider.Implementations;
+using MoonCore.Extended.JwtInvalidation;
 using MoonCore.Extensions;
 using MoonCore.Helpers;
 using MoonCore.Services;
 using WebAppTemplate.ApiServer.Configuration;
 using WebAppTemplate.ApiServer.Database;
 using WebAppTemplate.ApiServer.Database.Entities;
-using WebAppTemplate.ApiServer.Http.Middleware;
-using WebAppTemplate.ApiServer.Implementations.OAuth2;
 
 namespace WebAppTemplate.ApiServer;
 
@@ -51,18 +49,17 @@ public class Startup
         await RegisterLogging();
         await RegisterBase();
         await RegisterDatabase();
-        await RegisterOAuth2();
+        await RegisterAuth();
 
         await BuildWebApplication();
 
         await PrepareDatabase();
 
         await UseBase();
-        await UseOAuth2();
+        await UseAuth();
         await UseBaseMiddleware();
 
         await MapBase();
-        await MapOAuth2();
 
         await WebApplication.RunAsync();
     }
@@ -82,7 +79,7 @@ public class Startup
     {
         WebApplicationBuilder.Services.AutoAddServices<Startup>();
         WebApplicationBuilder.Services.AddControllers();
-        
+
         WebApplicationBuilder.Services.AddApiExceptionHandler();
 
         return Task.CompletedTask;
@@ -101,8 +98,6 @@ public class Startup
 
     private Task UseBaseMiddleware()
     {
-        WebApplication.UseMiddleware<AuthorizationMiddleware>();
-
         return Task.CompletedTask;
     }
 
@@ -228,14 +223,14 @@ public class Startup
         WebApplicationBuilder.Logging.AddConfiguration(
             await File.ReadAllTextAsync(logConfigPath)
         );
-        
+
         // Mute exception handler middleware
         // https://github.com/dotnet/aspnetcore/issues/19740
         WebApplicationBuilder.Logging.AddFilter(
             "Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddleware",
             LogLevel.Critical
         );
-        
+
         WebApplicationBuilder.Logging.AddFilter(
             "Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware",
             LogLevel.Critical
@@ -275,49 +270,56 @@ public class Startup
 
     #endregion
 
-    #region OAuth2
+    #region Authentication & Authorisation
 
-    private Task RegisterOAuth2()
+    private Task RegisterAuth()
     {
-        WebApplicationBuilder.Services.AddOAuth2Authentication<User>(configuration =>
+        WebApplicationBuilder.Services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new()
+                {
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                        Configuration.Authentication.Secret
+                    )),
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidateAudience = true,
+                    ValidAudience = Configuration.PublicUrl,
+                    ValidateIssuer = true,
+                    ValidIssuer = Configuration.PublicUrl
+                };
+            });
+        
+        WebApplicationBuilder.Services.AddJwtInvalidation(options =>
         {
-            configuration.AccessSecret = Configuration.Authentication.AccessSecret;
-            configuration.RefreshSecret = Configuration.Authentication.RefreshSecret;
-            configuration.RefreshInterval = TimeSpan.FromSeconds(Configuration.Authentication.RefreshInterval);
-            configuration.RefreshDuration = TimeSpan.FromSeconds(Configuration.Authentication.RefreshDuration);
+            options.InvalidateTimeProvider = async (provider, principal) =>
+            {
+                var userIdClaim = principal.Claims.First(x => x.Type == "userId");
+                var userId = int.Parse(userIdClaim.Value);
+                
+                var userRepository = provider.GetRequiredService<DatabaseRepository<User>>();
+                var user = await userRepository.Get().FirstAsync(x => x.Id == userId);
 
-            configuration.ClientId = Configuration.Authentication.ClientId;
-            configuration.ClientSecret = Configuration.Authentication.ClientSecret;
-            configuration.RedirectUri = Configuration.Authentication.RedirectUri ?? Configuration.PublicUrl;
-            configuration.AuthorizeEndpoint = Configuration.Authentication.AuthorizeEndpoint ??
-                                              Configuration.PublicUrl + "/api/_auth/oauth2/authorize";
+                return user.InvalidateTimestamp;
+            };
         });
 
-        WebApplicationBuilder.Services.AddScoped<IDataProvider<User>, LocalUserOAuth2Provider>();
-
-        if (!Configuration.Authentication.UseLocalOAuth2)
-            return Task.CompletedTask;
-
-        WebApplicationBuilder.Services.AddLocalOAuth2Provider<User>(Configuration.PublicUrl);
-        WebApplicationBuilder.Services.AddScoped<ILocalProviderImplementation<User>, LocalUserOAuth2Provider>();
-
-        return Task.CompletedTask;
-    }
-
-    private Task UseOAuth2()
-    {
-        WebApplication.UseOAuth2Authentication<User>();
-        return Task.CompletedTask;
-    }
-
-    private Task MapOAuth2()
-    {
-        WebApplication.MapOAuth2Authentication<User>();
-
-        if (!Configuration.Authentication.UseLocalOAuth2)
-            return Task.CompletedTask;
+        WebApplicationBuilder.Services.AddAuthorization();
         
-        WebApplication.MapLocalOAuth2Provider<User>();
+        return Task.CompletedTask;
+    }
+
+    private Task UseAuth()
+    {
+        WebApplication.UseAuthentication();
+        
+        WebApplication.UseJwtInvalidation();
+        
+        WebApplication.UseAuthorization();
+        
         return Task.CompletedTask;
     }
 

@@ -30,22 +30,14 @@ namespace WebAppTemplate.ApiServer.Database.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AccessToken")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("RefreshTimestamp")
+                    b.Property<DateTime>("InvalidateTimestamp")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("RefreshToken")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("longtext");
 

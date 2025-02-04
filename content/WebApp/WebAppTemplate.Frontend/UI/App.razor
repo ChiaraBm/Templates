@@ -1,18 +1,5 @@
 ﻿@using WebAppTemplate.Frontend.UI.Layouts
 @using MoonCore.Blazor.Components
+@using MoonCore.Blazor.Tailwind.Components
 
-<ErrorLogger>
-    <OAuth2AuthenticationHandler>
-        <Router AppAssembly="@typeof(App).Assembly">
-            <Found Context="routeData">
-                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
-            </Found>
-            <NotFound>
-                <PageTitle>Not found</PageTitle>
-                <LayoutView Layout="@typeof(MainLayout)">
-                    <p role="alert">Sorry, there's nothing at this address.</p>
-                </LayoutView>
-            </NotFound>
-        </Router>
-    </OAuth2AuthenticationHandler>
-</ErrorLogger>
+<ApplicationRouter AppAssembly="typeof(App).Assembly" DefaultLayout="typeof(MainLayout)" />
