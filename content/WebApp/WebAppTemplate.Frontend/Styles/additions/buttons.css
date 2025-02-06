@@ -26,31 +26,31 @@
 /* Colors */
 
 .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600;
+    @apply bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600 text-diffcolor;
 }
 
 .btn-secondary {
-    @apply bg-secondary-800 hover:bg-secondary-700 focus-visible:outline-secondary-800;
+    @apply bg-secondary-800 hover:bg-secondary-700 focus-visible:outline-secondary-800 text-diffcolor;
 }
 
 .btn-tertiary {
-    @apply bg-tertiary-600 hover:bg-tertiary-500 focus-visible:outline-tertiary-600;
+    @apply bg-tertiary-600 hover:bg-tertiary-500 focus-visible:outline-tertiary-600 text-diffcolor;
 }
 
 .btn-danger {
-    @apply bg-danger-600 hover:bg-danger-500 focus-visible:outline-danger-600;
+    @apply bg-danger-600 hover:bg-danger-500 focus-visible:outline-danger-600 text-diffcolor;
 }
 
 .btn-warning {
-    @apply bg-warning-500 hover:bg-warning-400 focus-visible:outline-warning-500;
+    @apply bg-warning-500 hover:bg-warning-400 focus-visible:outline-warning-500 text-diffcolor;
 }
 
 .btn-info {
-    @apply bg-info-600 hover:bg-info-500 focus-visible:outline-info-600;
+    @apply bg-info-600 hover:bg-info-500 focus-visible:outline-info-600 text-diffcolor;
 }
 
 .btn-success {
-    @apply bg-success-600 hover:bg-success-500 focus-visible:outline-success-600;
+    @apply bg-success-600 hover:bg-success-500 focus-visible:outline-success-600 text-diffcolor;
 }
 
 /* Outline */

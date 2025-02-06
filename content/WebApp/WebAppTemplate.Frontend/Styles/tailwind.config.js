@@ -2,7 +2,7 @@
 module.exports = {
     content: [
         '../**/*.razor',
-        'mappings/*.map'
+        'mappings/*'
     ],
     theme: {
         extend: {
@@ -117,8 +117,8 @@ module.exports = {
                 white: 'rgb(var(--color-light))',
                 black: 'rgb(var(--color-dark))'
             },
-            animation: {
-                'shimmer': 'shimmer 2s linear infinite',
+            textColor:{
+                diffcolor: 'rgb(var(--color-diffcolor, var(--color-light)))'
             }
         },
     },
