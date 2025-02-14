@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using WebAppTemplate.ApiServer.Configuration;
 using WebAppTemplate.ApiServer.Database.Entities;
 
@@ -23,15 +22,14 @@ public class DataContext : DbContext
         
         var config = Configuration.Database;
 
-        var connectionString = $"host={config.Host};" +
-                               $"port={config.Port};" +
-                               $"database={config.Database};" +
-                               $"uid={config.Username};" +
-                               $"pwd={config.Password}";
+        var connectionString = $"Host={config.Host};" +
+                               $"Port={config.Port};" +
+                               $"Database={config.Database};" +
+                               $"Username={config.Username};" +
+                               $"Password={config.Password}";
         
-        optionsBuilder.UseMySql(
+        optionsBuilder.UseNpgsql(
             connectionString,
-            ServerVersion.AutoDetect(connectionString),
             builder =>
             {
                 builder.EnableRetryOnFailure(5);

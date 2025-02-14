@@ -12,7 +12,7 @@ public class AppConfiguration
     public class DatabaseConfig
     {
         public string Host { get; set; } = "your-database-host.name";
-        public int Port { get; set; } = 3306;
+        public int Port { get; set; } = 5432;
 
         public string Username { get; set; } = "db_user";
         public string Password { get; set; } = "db_password";

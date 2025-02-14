@@ -15,7 +15,7 @@
         <PackageReference Include="MoonCore" Version="1.8.2" />
         <PackageReference Include="MoonCore.Extended" Version="1.2.7" />
         <PackageReference Include="MoonCore.PluginFramework" Version="1.0.4" />
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
         <PackageReference Include="Ben.Demystifier" Version="0.4.1" />
     </ItemGroup>
@@ -26,7 +26,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Database\Migrations\" />
       <Folder Include="Helpers\" />
       <Folder Include="Services\" />
     </ItemGroup>
