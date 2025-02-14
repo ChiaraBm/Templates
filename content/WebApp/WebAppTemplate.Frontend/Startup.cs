@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MoonCore.Blazor.Extensions;
 using MoonCore.Blazor.Services;
+using MoonCore.Blazor.Tailwind.Auth;
 using MoonCore.Blazor.Tailwind.Extensions;
-using MoonCore.Blazor.Tailwind.Forms;
-using MoonCore.Blazor.Tailwind.Forms.Components;
 using MoonCore.Extensions;
 using MoonCore.Helpers;
+using WebAppTemplate.Frontend.Services;
 using WebAppTemplate.Frontend.UI;
 
 namespace WebAppTemplate.Frontend;
@@ -34,8 +34,7 @@ public class Startup
 
         await RegisterLogging();
         await RegisterBase();
-        await RegisterOAuth2();
-        await RegisterFormComponents();
+        await RegisterAuthentication();
 
         await BuildWebAssemblyHost();
 
@@ -53,6 +52,26 @@ public class Startup
                 BaseAddress = new Uri(WebAssemblyHostBuilder.HostEnvironment.BaseAddress)
             }
         );
+
+        WebAssemblyHostBuilder.Services.AddScoped(sp =>
+        {
+            var httpClient = sp.GetRequiredService<HttpClient>();
+            var httpApiClient = new HttpApiClient(httpClient);
+
+            var localStorageService = sp.GetRequiredService<LocalStorageService>();
+
+            httpApiClient.OnConfigureRequest += async request =>
+            {
+                var accessToken = await localStorageService.GetString("AccessToken");
+
+                if (string.IsNullOrEmpty(accessToken))
+                    return;
+
+                request.Headers.Add("Authorization", $"Bearer {accessToken}");
+            };
+
+            return httpApiClient;
+        });
         
         WebAssemblyHostBuilder.Services.AddMoonCoreBlazorTailwind();
         WebAssemblyHostBuilder.Services.AddScoped<LocalStorageService>();
@@ -61,19 +80,13 @@ public class Startup
 
         return Task.CompletedTask;
     }
-
-    private Task RegisterOAuth2()
+    
+    private Task RegisterAuthentication()
     {
-        WebAssemblyHostBuilder.AddTokenAuthentication();
-        WebAssemblyHostBuilder.AddOAuth2();
-
-        return Task.CompletedTask;
-    }
-
-    private Task RegisterFormComponents()
-    {
-        FormComponentRepository.Set<string, StringComponent>();
-        FormComponentRepository.Set<int, IntComponent>();
+        WebAssemblyHostBuilder.Services.AddAuthorizationCore();
+        WebAssemblyHostBuilder.Services.AddCascadingAuthenticationState();
+        
+        WebAssemblyHostBuilder.Services.AddAuthenticationStateManager<RemoteAuthStateManager>();
         
         return Task.CompletedTask;
     }

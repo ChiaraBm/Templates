@@ -1,32 +1,27 @@
 ﻿@using MoonCore.Blazor.Tailwind.Components
-@using WebAppTemplate.Frontend.Services
 @using WebAppTemplate.Frontend.UI.Partials
 @using MoonCore.Blazor.Tailwind.Toasts
 @using MoonCore.Blazor.Tailwind.Modals
 
 @inherits LayoutComponentBase
 
-@inject IdentityService IdentityService
+<div>
+    <AppSidebar Layout="this"/>
 
-<LazyLoader Load="Load">
-    <div>
-        <AppSidebar Layout="this"/>
+    <div class="lg:pl-72">
+        <AppHeader Layout="this"/>
 
-        <div class="lg:pl-72">
-            <AppHeader Layout="this"/>
-
-            <main class="py-10">
-                <div class="px-4 sm:px-6 lg:px-8">
-                    <ErrorHandler>
-                        <CascadingValue Value="this" IsFixed="true">
-                            @Body
-                        </CascadingValue>
-                    </ErrorHandler>
-                </div>
-            </main>
-        </div>
+        <main class="py-10">
+            <div class="px-4 sm:px-6 lg:px-8">
+                <ErrorHandler>
+                    <CascadingValue Value="this" IsFixed="true">
+                        @Body
+                    </CascadingValue>
+                </ErrorHandler>
+            </div>
+        </main>
     </div>
-</LazyLoader>
+</div>
 
 <ToastLauncher/>
 <ModalLauncher/>
@@ -41,10 +36,5 @@
     {
         ShowMobileNavigation = !ShowMobileNavigation;
         await OnStateChanged();
-    }
-
-    private async Task Load(LazyLoader _)
-    {
-        await IdentityService.Check();
     }
 }

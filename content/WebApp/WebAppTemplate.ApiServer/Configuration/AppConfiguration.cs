@@ -12,7 +12,7 @@ public class AppConfiguration
     public class DatabaseConfig
     {
         public string Host { get; set; } = "your-database-host.name";
-        public int Port { get; set; } = 3306;
+        public int Port { get; set; } = 5432;
 
         public string Username { get; set; } = "db_user";
         public string Password { get; set; } = "db_password";
@@ -22,14 +22,10 @@ public class AppConfiguration
     
     public class AuthenticationConfig
     {
-        public string AccessSecret { get; set; } = Formatter.GenerateString(32);
-        public string RefreshSecret { get; set; } = Formatter.GenerateString(32);
-        public int RefreshInterval { get; set; } = 60;
-        public int RefreshDuration { get; set; } = 3600;
+        public string Secret { get; set; } = Formatter.GenerateString(32);
         public string ClientId { get; set; } = Formatter.GenerateString(8);
         public string ClientSecret { get; set; } = Formatter.GenerateString(32);
         public string? RedirectUri { get; set; }
         public string? AuthorizeEndpoint { get; set; }
-        public bool UseLocalOAuth2 { get; set; } = true;
     }
 }
