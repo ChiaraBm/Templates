@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using MoonCore.Blazor.Extensions;
 using MoonCore.Blazor.Services;
 using MoonCore.Blazor.Tailwind.Auth;
 using MoonCore.Blazor.Tailwind.Extensions;
