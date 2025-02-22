@@ -301,7 +301,11 @@ public class Startup
                 var userId = int.Parse(userIdClaim.Value);
                 
                 var userRepository = provider.GetRequiredService<DatabaseRepository<User>>();
-                var user = await userRepository.Get().FirstAsync(x => x.Id == userId);
+                var user = await userRepository.Get().FirstOrDefaultAsync(x => x.Id == userId);
+                
+                // If no user has been found with that id, we invalidate the jwt by setting the invalidation date to max
+                if(user == null)
+                    return DateTime.MaxValue;
 
                 return user.InvalidateTimestamp;
             };
