@@ -12,8 +12,8 @@ using WebAppTemplate.ApiServer.Database;
 namespace WebAppTemplate.ApiServer.Database.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250214094812_AddedBaseUserModel")]
-    partial class AddedBaseUserModel
+    [Migration("20250226083446_AddedBaseUser")]
+    partial class AddedBaseUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

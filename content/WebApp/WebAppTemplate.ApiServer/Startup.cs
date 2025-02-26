@@ -243,17 +243,10 @@ public class Startup
 
     private Task RegisterDatabase()
     {
-        var logger = LoggerFactory.CreateLogger<DatabaseHelper>();
-        var databaseHelper = new DatabaseHelper(logger);
+        WebApplicationBuilder.Services.AddDatabaseMappings();
 
-        // Add databases here
-        databaseHelper.AddDbContext<DataContext>();
-        WebApplicationBuilder.Services.AddScoped<DataContext>();
-
-        databaseHelper.GenerateMappings();
-
-        // Register services
-        WebApplicationBuilder.Services.AddSingleton(databaseHelper);
+        WebApplicationBuilder.Services.AddDbContext<DbContext, DataContext>();
+        
         WebApplicationBuilder.Services.AddScoped(typeof(DatabaseRepository<>));
         WebApplicationBuilder.Services.AddScoped(typeof(CrudHelper<,>));
 
@@ -262,10 +255,9 @@ public class Startup
 
     private async Task PrepareDatabase()
     {
-        using var scope = WebApplication.Services.CreateScope();
-        var databaseHelper = scope.ServiceProvider.GetRequiredService<DatabaseHelper>();
-
-        await databaseHelper.EnsureMigrated(scope.ServiceProvider);
+        await WebApplication.Services.EnsureDatabaseMigrated();
+        
+        WebApplication.Services.GenerateDatabaseMappings();
     }
 
     #endregion
