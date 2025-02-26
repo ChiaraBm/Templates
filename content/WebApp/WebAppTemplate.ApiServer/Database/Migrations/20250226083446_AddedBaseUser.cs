@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace WebAppTemplate.ApiServer.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedBaseUserModel : Migration
+    public partial class AddedBaseUser : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
