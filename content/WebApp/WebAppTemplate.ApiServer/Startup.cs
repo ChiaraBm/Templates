@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MoonCore.Configuration;
+using MoonCore.EnvConfiguration;
 using MoonCore.Extended.Abstractions;
 using MoonCore.Extended.Extensions;
 using MoonCore.Extended.Helpers;
@@ -23,8 +24,6 @@ public class Startup
 
     // Configuration
     private AppConfiguration Configuration;
-    private ConfigurationService ConfigurationService;
-    private ConfigurationOptions ConfigurationOptions;
 
     // Logging
     private ILoggerProvider[] LoggerProviders;
@@ -113,43 +112,32 @@ public class Startup
 
     #region Configurations
 
-    private Task SetupAppConfiguration()
+    private async Task SetupAppConfiguration()
     {
-        ConfigurationService = new ConfigurationService();
+        // Configure configuration (wow)
+        var configurationBuilder = new ConfigurationBuilder();
+        
+        // Ensure configuration file exists
+        var jsonFilePath = PathBuilder.File(Directory.GetCurrentDirectory(), "storage", "app.json");
 
-        // Setup options
-        ConfigurationOptions = new ConfigurationOptions();
+        if (!File.Exists(jsonFilePath))
+            await File.WriteAllTextAsync(jsonFilePath, JsonSerializer.Serialize(new AppConfiguration()));
 
-        ConfigurationOptions.AddConfiguration<AppConfiguration>("app");
-        ConfigurationOptions.Path = PathBuilder.Dir("storage");
-        ConfigurationOptions.EnvironmentPrefix = "WebAppTemplate".ToUpper();
-
-        // Create minimal logger
-        var loggerFactory = new LoggerFactory();
-
-        loggerFactory.AddMoonCore(configuration =>
-        {
-            configuration.Console.Enable = true;
-            configuration.Console.EnableAnsiMode = true;
-            configuration.FileLogging.Enable = false;
-        });
-
-        var logger = loggerFactory.CreateLogger<ConfigurationService>();
-
-        // Retrieve configuration
-        Configuration = ConfigurationService.GetConfiguration<AppConfiguration>(
-            ConfigurationOptions,
-            logger
+        configurationBuilder.AddJsonFile(
+            jsonFilePath
         );
 
-        return Task.CompletedTask;
+        configurationBuilder.AddEnvironmentVariables(prefix: "MOONLIGHT_", separator: "_");
+
+        var configurationRoot = configurationBuilder.Build();
+
+        // Retrieve configuration
+        Configuration = configurationRoot.Get<AppConfiguration>()!;
     }
 
     private Task RegisterAppConfiguration()
     {
-        ConfigurationService.RegisterInDi(ConfigurationOptions, WebApplicationBuilder.Services);
-        WebApplicationBuilder.Services.AddSingleton(ConfigurationService);
-
+        WebApplicationBuilder.Services.AddSingleton(Configuration);
         return Task.CompletedTask;
     }
 
@@ -244,8 +232,9 @@ public class Startup
     private Task RegisterDatabase()
     {
         WebApplicationBuilder.Services.AddDatabaseMappings();
+        WebApplicationBuilder.Services.AddServiceCollectionAccessor();
 
-        WebApplicationBuilder.Services.AddDbContext<DbContext, DataContext>();
+        WebApplicationBuilder.Services.AddDbContext<DataContext>();
         
         WebApplicationBuilder.Services.AddScoped(typeof(DatabaseRepository<>));
         WebApplicationBuilder.Services.AddScoped(typeof(CrudHelper<,>));

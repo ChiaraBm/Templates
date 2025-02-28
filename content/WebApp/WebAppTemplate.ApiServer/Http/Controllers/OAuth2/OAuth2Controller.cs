@@ -21,11 +21,17 @@ public class OAuth2Controller : Controller
 {
     private readonly AppConfiguration Configuration;
     private readonly DatabaseRepository<User> UserRepository;
+    
+    private readonly string ExpectedRedirectUri;
 
     public OAuth2Controller(AppConfiguration configuration, DatabaseRepository<User> userRepository)
     {
         Configuration = configuration;
         UserRepository = userRepository;
+        
+        ExpectedRedirectUri = string.IsNullOrEmpty(Configuration.Authentication.RedirectUri)
+            ? Configuration.PublicUrl
+            : Configuration.Authentication.RedirectUri;
     }
 
     [AllowAnonymous]
@@ -37,10 +43,8 @@ public class OAuth2Controller : Controller
         [FromQuery(Name = "view")] string view = "login"
     )
     {
-        var requiredRedirectUri = Configuration.Authentication.RedirectUri ?? Configuration.PublicUrl;
-
         if (Configuration.Authentication.ClientId != clientId ||
-            requiredRedirectUri != redirectUri ||
+            redirectUri != ExpectedRedirectUri ||
             responseType != "code")
         {
             throw new HttpApiException("Invalid oauth2 request", 400);
@@ -84,14 +88,13 @@ public class OAuth2Controller : Controller
         [FromQuery(Name = "view")] string view = "login"
     )
     {
-        var requiredRedirectUri = Configuration.Authentication.RedirectUri ?? Configuration.PublicUrl;
-
         if (Configuration.Authentication.ClientId != clientId ||
-            requiredRedirectUri != redirectUri ||
+            redirectUri != ExpectedRedirectUri ||
             responseType != "code")
         {
             throw new HttpApiException("Invalid oauth2 request", 400);
         }
+
 
         if (view == "register" && string.IsNullOrEmpty(username))
             throw new HttpApiException("You need to provide a username", 400);
@@ -175,7 +178,7 @@ public class OAuth2Controller : Controller
         if(clientId != Configuration.Authentication.ClientId)
             throw new HttpApiException("Invalid client id provided", 400);
         
-        if(redirectUri != (Configuration.Authentication.RedirectUri ?? Configuration.PublicUrl))
+        if(redirectUri != ExpectedRedirectUri)
             throw new HttpApiException("Invalid redirect uri provided", 400);
         
         var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
@@ -225,7 +228,7 @@ public class OAuth2Controller : Controller
         };
     }
 
-    private async Task<string> GenerateCode(User user)
+    private Task<string> GenerateCode(User user)
     {
         var securityTokenDescriptor = new SecurityTokenDescriptor()
         {
@@ -250,7 +253,9 @@ public class OAuth2Controller : Controller
         var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
         var securityToken = jwtSecurityTokenHandler.CreateToken(securityTokenDescriptor);
 
-        return jwtSecurityTokenHandler.WriteToken(securityToken);
+        var jwt = jwtSecurityTokenHandler.WriteToken(securityToken);
+
+        return Task.FromResult(jwt);
     }
 
     private async Task<User> Register(string username, string email, string password)
