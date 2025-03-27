@@ -12,6 +12,11 @@
 
 @import "tailwindcss/utilities";
 
+/*
+Add this line to enable white mode
+@import "additions/theme.white.css";
+*/
+
 #blazor-error-ui {
     display: none;
 }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>MoonCore.Templates</PackageId>
-    <PackageVersion>1.1.1</PackageVersion>
+    <PackageVersion>1.1.2</PackageVersion>
     <Title>MoonCore.Templates</Title>
     <Authors>Chiara Baumgartner</Authors>
     <Description>This package contains templates to start with new projects faster using the mooncore utilities</Description>

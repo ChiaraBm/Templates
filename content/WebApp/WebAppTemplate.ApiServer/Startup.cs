@@ -127,7 +127,7 @@ public class Startup
             jsonFilePath
         );
 
-        configurationBuilder.AddEnvironmentVariables(prefix: "MOONLIGHT_", separator: "_");
+        configurationBuilder.AddEnvironmentVariables(prefix: "WebAppTemplate_".ToUpper(), separator: "_");
 
         var configurationRoot = configurationBuilder.Build();
 
