@@ -16,8 +16,8 @@
     <nav class="flex h-full min-h-0 flex-col">
         <div class="flex flex-col border-b p-4 border-white/5">
             <span class="relative">
-                <button type="button"
-                        class="flex w-full cursor-default items-center gap-3 rounded-lg px-2 py-2.5 text-left text-base/6 font-medium text-gray-100">
+                <div type="button"
+                        class="flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-base/6 font-medium text-gray-100">
                     <span
                         class="inline-grid shrink-0 align-middle">
                         <img class="h-8 rounded-full"
@@ -25,7 +25,7 @@
                              alt=""/>
                     </span>
                     <span class="truncate">WebAppTemplate</span>
-                </button>
+                </div>
             </span>
         </div>
         <div class="flex flex-1 flex-col overflow-y-auto p-4 mt-1">
@@ -78,7 +78,7 @@
         </div>
         <div class="flex flex-col border-t p-4 max-lg:hidden border-white/5 mt-2.5">
             <div
-                class="flex w-full cursor-default items-center px-2 py-2.5 gap-6 rounded-lg text-left text-base/6 font-medium sm:py-2 sm:text-sm/5 text-white">
+                class="flex w-full items-center px-2 py-2.5 gap-6 rounded-lg text-left text-base/6 font-medium sm:py-2 sm:text-sm/5 text-white">
                 <div class="flex min-w-0 items-center gap-3">
                     <span class="inline-grid shrink-0 align-middle">
                         <img class="h-8 rounded-full"
@@ -110,18 +110,17 @@
         <div
             class="relative flex h-full flex-col rounded-lg shadow-xs ring-1 bg-gray-900 ring-white/10 transition ease-in-out duration-300 transform @(Layout.ShowMobileNavigation ? "translate-x-0" : "-translate-x-full")">
             <div class="border-b p-4 border-white/5 flex justify-between px-5 pt-3">
-                <button type="button"
-                        class="flex items-center gap-3 rounded-lg px-2 py-2.5 text-left text-base/6 font-medium sm:py-2 sm:text-sm/5 text-white">
+                <div class="flex items-center gap-3 rounded-lg px-2 py-2.5 text-left text-base/6 font-medium sm:py-2 sm:text-sm/5 text-white">
                     <div data-slot="avatar"
                          class="inline-grid shrink-0 align-middle">
                         <img
                             class="h-8 rounded-full" src="/placeholder.jpg" alt=""/>
                     </div>
                     <div class="truncate">WebAppTemplate</div>
-                </button>
+                </div>
 
                 <button @onclick="Layout.ToggleMobileNavigation" aria-label="Close navigation" type="button"
-                        class="relative flex min-w-0 cursor-default items-center gap-3 rounded-lg p-2 text-left text-base/6 text-white">
+                        class="relative flex min-w-0 items-center gap-3 rounded-lg p-2 text-left text-base/6 text-white">
                     <i class="icon-x text-lg"></i>
                 </button>
             </div>
