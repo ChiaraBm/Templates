@@ -4,5 +4,12 @@
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.9"
+  }, 
+  "scripts": {
+    "tailwind":"npx tailwindcss -i style.css -o ../wwwroot/css/style.min.css --watch", 
+    "tailwind4":"npx @tailwindcss/cli -i styles.css -o ../wwwroot/css/styles.min.css --watch" 
+
   }
-}
+} 
+
+
