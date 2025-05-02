@@ -4,7 +4,6 @@
 @using WebAppTemplate.Frontend.Models
 @using WebAppTemplate.Frontend.UI.Layouts
 
-@inject ToastService ToastService
 @inject NavigationManager Navigation
 @inject AuthenticationStateManager AuthStateManager
 
@@ -17,7 +16,7 @@
         <div class="flex flex-col border-b p-4 border-white/5">
             <span class="relative">
                 <div type="button"
-                        class="flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-base/6 font-medium text-gray-100">
+                     class="flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-lg font-medium text-gray-100">
                     <span
                         class="inline-grid shrink-0 align-middle">
                         <img class="h-8 rounded-full"
@@ -110,7 +109,8 @@
         <div
             class="relative flex h-full flex-col rounded-lg shadow-xs ring-1 bg-gray-900 ring-white/10 transition ease-in-out duration-300 transform @(Layout.ShowMobileNavigation ? "translate-x-0" : "-translate-x-full")">
             <div class="border-b p-4 border-white/5 flex justify-between px-5 pt-3">
-                <div class="flex items-center gap-3 rounded-lg px-2 py-2.5 text-left text-base/6 font-medium sm:py-2 sm:text-sm/5 text-white">
+                <div
+                    class="flex items-center gap-3 rounded-lg px-2 py-2.5 text-left text-base/6 font-medium sm:py-2 sm:text-sm/5 text-white">
                     <div data-slot="avatar"
                          class="inline-grid shrink-0 align-middle">
                         <img
