@@ -11,5 +11,5 @@ public class User
     public string Password { get; set; }
 
     [Column(TypeName="timestamp with time zone")]
-    public DateTime InvalidateTimestamp { get; set; } = DateTime.MinValue;
+    public DateTimeOffset InvalidateTimestamp { get; set; } = DateTimeOffset.MinValue;
 }

@@ -1,9 +1,11 @@
 using MoonCore.Helpers;
+using YamlDotNet.Serialization;
 
 namespace WebAppTemplate.ApiServer.Configuration;
 
 public class AppConfiguration
 {
+    [YamlMember(Description = "The url WebAppTemplate is ")]
     public string PublicUrl { get; set; } = "http://localhost:5265";
     
     public DatabaseConfig Database { get; set; } = new();
