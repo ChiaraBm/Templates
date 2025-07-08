@@ -23,9 +23,8 @@ public class Startup
     private AppConfiguration Configuration;
 
     // Logging
-    private ILoggerProvider[] LoggerProviders;
-    private ILoggerFactory LoggerFactory;
-    private ILogger<Startup> Logger;
+    private ILoggerFactory StartupLoggerFactory;
+    private ILogger<Startup> StartupLogger;
 
     // WebApplication Stuff
     private WebApplication WebApplication;
@@ -48,7 +47,7 @@ public class Startup
         await RegisterAuth();
 
         await BuildWebApplication();
-
+        
         await PrepareDatabase();
 
         await UseBase();
@@ -155,12 +154,11 @@ public class Startup
 
     private Task SetupLogging()
     {
-        LoggerFactory = new LoggerFactory();
+        StartupLoggerFactory = new LoggerFactory();
         
-        LoggerFactory.AddAnsiConsole();
-        LoggerFactory.AddFile(Path.Combine("storage", "WebAppTemplate.log"));
+        StartupLoggerFactory.AddAnsiConsole();
 
-        Logger = LoggerFactory.CreateLogger<Startup>();
+        StartupLogger = StartupLoggerFactory.CreateLogger<Startup>();
 
         return Task.CompletedTask;
     }
