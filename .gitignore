@@ -400,4 +400,4 @@ FodyWeavers.xsd
 
 # WebApp
 **/storage
-**/wwwroot/css/style.min.css
+**/style.min.css

@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using MoonCore.Blazor.FlyonUi;
+using MoonCore.Blazor.FlyonUi.Auth;
 using MoonCore.Blazor.Services;
-using MoonCore.Blazor.Tailwind.Auth;
-using MoonCore.Blazor.Tailwind.Extensions;
 using MoonCore.Extensions;
 using MoonCore.Helpers;
+using MoonCore.Logging;
 using WebAppTemplate.Frontend.Services;
 using WebAppTemplate.Frontend.UI;
 
@@ -15,7 +16,6 @@ public class Startup
     private string[] Args;
 
     // Logging
-    private ILoggerProvider[] LoggerProviders;
     private ILoggerFactory LoggerFactory;
     private ILogger<Startup> Logger;
 
@@ -72,7 +72,7 @@ public class Startup
             return httpApiClient;
         });
         
-        WebAssemblyHostBuilder.Services.AddMoonCoreBlazorTailwind();
+        WebAssemblyHostBuilder.Services.AddFlyonUiServices();
         WebAssemblyHostBuilder.Services.AddScoped<LocalStorageService>();
 
         WebAssemblyHostBuilder.Services.AutoAddServices<Program>();
@@ -94,15 +94,8 @@ public class Startup
 
     private Task SetupLogging()
     {
-        LoggerProviders = LoggerBuildHelper.BuildFromConfiguration(configuration =>
-        {
-            configuration.Console.Enable = true;
-            configuration.Console.EnableAnsiMode = true;
-            configuration.FileLogging.Enable = false;
-        });
-
         LoggerFactory = new LoggerFactory();
-        LoggerFactory.AddProviders(LoggerProviders);
+        LoggerFactory.AddAnsiConsole();
 
         Logger = LoggerFactory.CreateLogger<Startup>();
 
@@ -112,7 +105,7 @@ public class Startup
     private Task RegisterLogging()
     {
         WebAssemblyHostBuilder.Logging.ClearProviders();
-        WebAssemblyHostBuilder.Logging.AddProviders(LoggerProviders);
+        WebAssemblyHostBuilder.Logging.AddAnsiConsole();
 
         return Task.CompletedTask;
     }
