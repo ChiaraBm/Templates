@@ -23,7 +23,11 @@
 @source "../**/*.cs";
 @source "../**/*.html";
 
-@source "mappings/*.map";
+@source "../../WebAppTemplate.ApiServer/**/*.razor";
+@source "../../WebAppTemplate.ApiServer/**/*.cs";
+@source "../../WebAppTemplate.ApiServer/**/*.html";
+
+@source "**/*.map";
 
 #blazor-error-ui {
     display: none;

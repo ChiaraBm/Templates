@@ -17,7 +17,7 @@ namespace WebAppTemplate.ApiServer.Database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "9.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -34,7 +34,7 @@ namespace WebAppTemplate.ApiServer.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("InvalidateTimestamp")
+                    b.Property<DateTimeOffset>("InvalidateTimestamp")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Password")
