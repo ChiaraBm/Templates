@@ -9,7 +9,5 @@ public class User
     public string Username { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
-
-    [Column(TypeName="timestamp with time zone")]
     public DateTimeOffset InvalidateTimestamp { get; set; } = DateTimeOffset.MinValue;
 }

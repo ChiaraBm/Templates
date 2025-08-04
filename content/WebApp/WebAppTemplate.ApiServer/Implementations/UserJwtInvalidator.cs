@@ -28,10 +28,10 @@ public class UserJwtInvalidator : IJwtInvalidateHandler
             .Get()
             .FirstOrDefaultAsync(x => x.Id == userId);
         
-        // If no user has been found with that id, we invalidate the jwt by setting the invalidation date to max
+        // If no user has been found with that id, we invalidate the jwt
         if(user == null)
             return true;
 
-        return user.InvalidateTimestamp > issuedAt;
+        return user.InvalidateTimestamp > issuedAt; // When the invalidate timestamp is higher than the iat timestamp, the jwt is expired
     }
 }

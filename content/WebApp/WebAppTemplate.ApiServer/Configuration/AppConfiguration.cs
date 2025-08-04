@@ -33,4 +33,12 @@ public class AppConfiguration
         public string? RedirectUri { get; set; }
         public string? AuthorizeEndpoint { get; set; }
     }
+
+    public static AppConfiguration CreateEmpty()
+    {
+        return new()
+        {
+            // Empty default values for arrays here to ensure the microsoft config system doesn't duplicate entries
+        };
+    }
 }
