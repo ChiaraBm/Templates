@@ -5,7 +5,7 @@ namespace WebAppTemplate.ApiServer.Configuration;
 
 public class AppConfiguration
 {
-    [YamlMember(Description = "The url WebAppTemplate is is accessible through")]
+    [YamlMember(Description = "The url WebAppTemplate is accessible through")]
     public string PublicUrl { get; set; } = "http://localhost:5265";
     
     [YamlMember(Description = "The postgres database credentials the application should use")]
@@ -32,6 +32,7 @@ public class AppConfiguration
         public string ClientSecret { get; set; } = Formatter.GenerateString(32);
         public string? RedirectUri { get; set; }
         public string? AuthorizeEndpoint { get; set; }
+        public string? AccessEndpoint { get; set; }
     }
 
     public static AppConfiguration CreateEmpty()
