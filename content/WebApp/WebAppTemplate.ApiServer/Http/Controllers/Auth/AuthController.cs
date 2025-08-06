@@ -49,11 +49,14 @@ public class AuthController : Controller
     [HttpGet("start")]
     public Task<LoginStartResponse> Start()
     {
+        var url = $"{EndpointUri}" +
+                  $"?client_id={Configuration.Authentication.ClientId}" +
+                  $"&redirect_uri={RedirectUri}" +
+                  $"&response_type=code";
+        
         var response = new LoginStartResponse()
         {
-            ClientId = Configuration.Authentication.ClientId,
-            RedirectUri = RedirectUri,
-            Endpoint = EndpointUri
+            Url = url
         };
 
         return Task.FromResult(response);
@@ -63,8 +66,11 @@ public class AuthController : Controller
     [HttpPost("complete")]
     public async Task<LoginCompleteResponse> Complete([FromBody] LoginCompleteRequest request)
     {
+        var accessEndpoint = string.IsNullOrEmpty(Configuration.Authentication.AccessEndpoint)
+            ? Configuration.PublicUrl + "/oauth2/handle"
+            : Configuration.Authentication.AccessEndpoint;
+        
         using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri(Configuration.PublicUrl);
         httpClient.DefaultRequestHeaders.Add("Authorization", $"Basic {Configuration.Authentication.ClientSecret}");
 
         var httpApiClient = new HttpApiClient(httpClient);
@@ -73,7 +79,7 @@ public class AuthController : Controller
 
         try
         {
-            handleData = await httpApiClient.PostJson<OAuth2HandleResponse>("oauth2/handle", new FormUrlEncodedContent(
+            handleData = await httpApiClient.PostJson<OAuth2HandleResponse>(accessEndpoint, new FormUrlEncodedContent(
                 [
                     new KeyValuePair<string, string>("grant_type", "authorization_code"),
                     new KeyValuePair<string, string>("code", request.Code),

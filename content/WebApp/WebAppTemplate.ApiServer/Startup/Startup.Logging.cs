@@ -10,7 +10,6 @@ public partial class Startup
         // Configure application logging
         WebApplicationBuilder.Logging.ClearProviders();
         WebApplicationBuilder.Logging.AddAnsiConsole();
-        WebApplicationBuilder.Logging.AddFile(Path.Combine("storage", "WebAppTemplate.log"));
 
         // Logging levels
         var logConfigPath = Path.Combine("storage", "logConfig.json");
