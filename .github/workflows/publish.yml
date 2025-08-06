@@ -30,6 +30,6 @@ jobs:
       - name: Publish on version change
         uses: alirezanet/publish-nuget@v3.1.0
         with:
-          PROJECT_FILE_PATH: Templates.csproj
+          PROJECT_FILE_PATH: MoonCore.Templates.csproj
           TAG_COMMIT: false
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
