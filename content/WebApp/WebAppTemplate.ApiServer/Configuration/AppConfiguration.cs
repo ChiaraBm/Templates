@@ -28,11 +28,18 @@ public class AppConfiguration
     public class AuthenticationConfig
     {
         public string Secret { get; set; } = Formatter.GenerateString(32);
-        public string ClientId { get; set; } = Formatter.GenerateString(8);
-        public string ClientSecret { get; set; } = Formatter.GenerateString(32);
-        public string? RedirectUri { get; set; }
-        public string? AuthorizeEndpoint { get; set; }
-        public string? AccessEndpoint { get; set; }
+
+        [YamlMember(Description = "This section configures the behavior of user sessions\n")]
+        public SessionsConfig Sessions { get; set; } = new();
+    }
+    
+    public class SessionsConfig
+    {
+        [YamlMember(Description = "Specifies the cookie name used to save the session on the useragent")]
+        public string CookieName { get; set; } = "session";
+        
+        [YamlMember(Description = "Sets the expire time of the cookie in days")]
+        public int ExpiresIn { get; set; } = 10;
     }
 
     public static AppConfiguration CreateEmpty()

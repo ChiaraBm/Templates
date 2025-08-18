@@ -1,9 +1,8 @@
+@using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
-@using MoonCore.Blazor.FlyonUi.Auth
 @using WebAppTemplate.Frontend.UI.Layouts
 
 @inject NavigationManager Navigation
-@inject AuthenticationStateManager AuthStateManager
 
 @{
     var url = new Uri(Navigation.Uri);
@@ -202,8 +201,8 @@
     {
         var identity = await AuthState;
 
-        Username = identity.User.Claims.First(x => x.Type == "username").Value;
-        Email = identity.User.Claims.First(x => x.Type == "email").Value;
+        Username = identity.User.FindFirst(ClaimTypes.Name)!.Value;
+        Email = identity.User.FindFirst(ClaimTypes.Email)!.Value;
     }
 
     protected override void OnInitialized()
@@ -244,9 +243,10 @@
         return Task.CompletedTask;
     }
 
-    private async Task Logout()
+    private Task Logout()
     {
-        await AuthStateManager.Logout();
+        Navigation.NavigateTo("/api/auth/logout", true);
+        return Task.CompletedTask;
     }
 
     record SidebarItem

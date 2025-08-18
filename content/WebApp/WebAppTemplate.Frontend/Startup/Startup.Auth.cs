@@ -1,5 +1,5 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using WebAppTemplate.Frontend.Services;
-using MoonCore.Blazor.FlyonUi.Auth;
 
 namespace WebAppTemplate.Frontend.Startup;
 
@@ -11,7 +11,7 @@ public partial class Startup
         WebAssemblyHostBuilder.Services.AddAuthorizationCore();
         WebAssemblyHostBuilder.Services.AddCascadingAuthenticationState();
         
-        WebAssemblyHostBuilder.Services.AddAuthenticationStateManager<RemoteAuthStateManager>();
+        WebAssemblyHostBuilder.Services.AddScoped<AuthenticationStateProvider, RemoteAuthStateProvider>();
         
         return Task.CompletedTask;
     }
