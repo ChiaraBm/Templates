@@ -1,4 +1,9 @@
 ﻿@using WebAppTemplate.Frontend.UI.Layouts
 @using MoonCore.Blazor.FlyonUi.Components
+@using WebAppTemplate.Frontend.UI.Partials
 
-<ApplicationRouter AppAssembly="typeof(App).Assembly" DefaultLayout="typeof(MainLayout)" DisableBlazorServerSideSafeMode="true" />
+<ApplicationRouter AppAssembly="typeof(App).Assembly" DefaultLayout="typeof(MainLayout)" DisableBlazorServerSideSafeMode="true">
+    <LoginTemplate>
+        <LoginSelector />
+    </LoginTemplate>
+</ApplicationRouter>

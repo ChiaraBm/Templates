@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace WebAppTemplate.ApiServer.Database.Entities;
 
 public class User

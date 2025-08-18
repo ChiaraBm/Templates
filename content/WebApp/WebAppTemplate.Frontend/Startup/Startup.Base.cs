@@ -24,21 +24,7 @@ public partial class Startup
         WebAssemblyHostBuilder.Services.AddScoped(sp =>
         {
             var httpClient = sp.GetRequiredService<HttpClient>();
-            var httpApiClient = new HttpApiClient(httpClient);
-
-            var localStorageService = sp.GetRequiredService<LocalStorageService>();
-
-            httpApiClient.OnConfigureRequest += async request =>
-            {
-                var accessToken = await localStorageService.GetString("AccessToken");
-
-                if (string.IsNullOrEmpty(accessToken))
-                    return;
-
-                request.Headers.Add("Authorization", $"Bearer {accessToken}");
-            };
-
-            return httpApiClient;
+            return new HttpApiClient(httpClient);
         });
         
         WebAssemblyHostBuilder.Services.AddFlyonUiServices();

@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Components.Authorization;
+using MoonCore.Blazor.FlyonUi.Exceptions;
+using WebAppTemplate.Frontend.Implementations;
 using WebAppTemplate.Frontend.Services;
-using MoonCore.Blazor.FlyonUi.Auth;
 
 namespace WebAppTemplate.Frontend.Startup;
 
@@ -11,7 +13,9 @@ public partial class Startup
         WebAssemblyHostBuilder.Services.AddAuthorizationCore();
         WebAssemblyHostBuilder.Services.AddCascadingAuthenticationState();
         
-        WebAssemblyHostBuilder.Services.AddAuthenticationStateManager<RemoteAuthStateManager>();
+        WebAssemblyHostBuilder.Services.AddScoped<AuthenticationStateProvider, RemoteAuthStateProvider>();
+
+        WebAssemblyHostBuilder.Services.AddScoped<IGlobalErrorFilter, UnauthenticatedErrorFilter>();
         
         return Task.CompletedTask;
     }
