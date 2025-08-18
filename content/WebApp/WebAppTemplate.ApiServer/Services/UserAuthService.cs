@@ -8,22 +8,28 @@ using WebAppTemplate.ApiServer.Database.Entities;
 
 namespace WebAppTemplate.ApiServer.Services;
 
-public class UserSyncService
+public class UserAuthService
 {
-    private readonly ILogger<UserSyncService> Logger;
+    private readonly ILogger<UserAuthService> Logger;
     private readonly DatabaseRepository<User> UserRepository;
 
-    public UserSyncService(ILogger<UserSyncService> logger, DatabaseRepository<User> userRepository)
+    private const string UserIdClaim = "UserId";
+    private const string IssuedAtClaim = "IssuedAt";
+
+    public UserAuthService(ILogger<UserAuthService> logger, DatabaseRepository<User> userRepository)
     {
         Logger = logger;
         UserRepository = userRepository;
     }
 
-    public async Task<bool> Sync(ClaimsPrincipal principal)
+    public async Task<bool> Sync(ClaimsPrincipal? principal)
     {
-        if (principal.Identity is not { IsAuthenticated: true })
+        // Ignore malformed claims principal
+        if (principal is not { Identity.IsAuthenticated: true })
             return false;
 
+        // Search for email and username. We need both to create the user model
+        
         var email = principal.FindFirstValue(ClaimTypes.Email)?.ToLower();
         var username = principal.FindFirstValue(ClaimTypes.Name);
 
@@ -63,10 +69,49 @@ public class UserSyncService
             await UserRepository.Update(user);
         }
 
-        principal.Identities.First().AddClaim(
-            new Claim("UserId", user.Id.ToString())
-        );
+        principal.Identities.First().AddClaims([
+            new Claim(UserIdClaim, user.Id.ToString()),
+            new Claim(IssuedAtClaim, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString())
+        ]);
 
         return true;
+    }
+
+    public async Task<bool> Validate(ClaimsPrincipal? principal)
+    {
+        // Ignore malformed claims principal
+        if(principal is not { Identity.IsAuthenticated: true })
+            return false;
+        
+        // Validate if the user still exists, and then we want to validate the token issue time
+        // against the invalidation time
+
+        var userIdStr = principal.FindFirstValue(UserIdClaim);
+
+        if (!int.TryParse(userIdStr, out var userId))
+            return false;
+
+        var user = await UserRepository
+            .Get()
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+            return false;
+
+        // Token time validation
+        var issuedAtStr = principal.FindFirstValue(IssuedAtClaim);
+        
+        if(!long.TryParse(issuedAtStr, out var issuedAtUnix))
+            return false;
+        
+        var issuedAt = DateTimeOffset
+            .FromUnixTimeSeconds(issuedAtUnix)
+            .ToUniversalTime();
+        
+        // If the issued at timestamp is greater than the token validation timestamp
+        // everything is fine. If not it means that the token should be invalidated
+        // as it is too old
+        
+        return issuedAt > user.InvalidateTimestamp;
     }
 }

@@ -75,12 +75,25 @@ public partial class Startup
                     var userSyncService = context
                         .HttpContext
                         .RequestServices
-                        .GetRequiredService<UserSyncService>();
+                        .GetRequiredService<UserAuthService>();
 
-                    var result = await userSyncService.Sync(context.Principal!);
+                    var result = await userSyncService.Sync(context.Principal);
 
                     if (!result)
                         context.Principal = new();
+                };
+
+                options.Events.OnValidatePrincipal = async context =>
+                {
+                    var userSyncService = context
+                        .HttpContext
+                        .RequestServices
+                        .GetRequiredService<UserAuthService>();
+
+                    var result = await userSyncService.Validate(context.Principal);
+
+                    if (!result)
+                        context.RejectPrincipal();
                 };
 
                 options.Cookie = new CookieBuilder()
@@ -101,7 +114,7 @@ public partial class Startup
 
         WebApplicationBuilder.Services.AddAuthorization();
 
-        WebApplicationBuilder.Services.AddScoped<UserSyncService>();
+        WebApplicationBuilder.Services.AddScoped<UserAuthService>();
 
         return Task.CompletedTask;
     }
