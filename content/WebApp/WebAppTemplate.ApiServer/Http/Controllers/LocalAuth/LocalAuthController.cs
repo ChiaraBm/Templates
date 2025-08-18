@@ -129,7 +129,7 @@ public class LocalAuthController : Controller
             string errorMessage;
 
             if (e is HttpApiException apiException)
-                errorMessage = apiException.Message;
+                errorMessage = apiException.Title;
             else
             {
                 errorMessage = "An internal error occured";

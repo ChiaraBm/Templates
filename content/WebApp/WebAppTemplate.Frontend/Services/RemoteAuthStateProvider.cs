@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 using MoonCore.Exceptions;
 using MoonCore.Helpers;
+using WebAppTemplate.Shared.Http.Responses.Auth;
 
 namespace WebAppTemplate.Frontend.Services;
 
@@ -20,13 +21,13 @@ public class RemoteAuthStateProvider : AuthenticationStateProvider
 
         try
         {
-            var claims = await ApiClient.GetJson<Dictionary<string, string>>(
+            var claims = await ApiClient.GetJson<AuthClaimResponse[]>(
                 "api/auth/check"
             );
 
             principal = new ClaimsPrincipal(
                 new ClaimsIdentity(
-                    claims.Select(x => new Claim(x.Key, x.Value)),
+                    claims.Select(x => new Claim(x.Type, x.Value)),
                     "RemoteAuthentication"
                 )
             );

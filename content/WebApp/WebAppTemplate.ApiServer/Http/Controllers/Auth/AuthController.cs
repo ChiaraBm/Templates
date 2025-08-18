@@ -65,22 +65,24 @@ public class AuthController : Controller
 
     [Authorize]
     [HttpGet("check")]
-    public Task<Dictionary<string, string>> Check()
+    public Task<AuthClaimResponse[]> Check()
     {
-        var username = HttpContext.User.FindFirstValue(ClaimTypes.Name)!;
-        var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        var email = HttpContext.User.FindFirstValue(ClaimTypes.Email)!;
-        var userId = HttpContext.User.FindFirstValue("UserId")!;
+        var username = User.FindFirstValue(ClaimTypes.Name)!;
+        var id = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var email = User.FindFirstValue(ClaimTypes.Email)!;
+        var userId = User.FindFirstValue("UserId")!;
 
-        var claims = new Dictionary<string, string>
+        var claims = new List<AuthClaimResponse>()
         {
-            { ClaimTypes.Name, username },
-            { ClaimTypes.NameIdentifier, id },
-            { ClaimTypes.Email, email },
-            { "UserId", userId }
+            new(ClaimTypes.Name, username),
+            new(ClaimTypes.NameIdentifier, id),
+            new(ClaimTypes.Email, email),
+            new("UserId", userId)
         };
 
-        return Task.FromResult(claims);
+        return Task.FromResult(
+            claims.ToArray()
+        );
     }
 
     [HttpGet("logout")]
