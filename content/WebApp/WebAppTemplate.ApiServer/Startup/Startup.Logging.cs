@@ -21,7 +21,8 @@ public partial class Startup
             {
                 { "Default", "Information" },
                 { "Microsoft.AspNetCore", "Warning" },
-                { "System.Net.Http.HttpClient", "Warning" }
+                { "System.Net.Http.HttpClient", "Warning" },
+                { "WebAppTemplate.ApiServer.Implementations.LocalAuth.LocalAuthHandler", "Warning" }
             };
 
             var defaultJson = JsonSerializer.Serialize(defaultLogLevels);
@@ -37,7 +38,7 @@ public partial class Startup
             var level = Enum.Parse<LogLevel>(logLevel.Value);
             WebApplicationBuilder.Logging.AddFilter(logLevel.Key, level);
         }
-        
+
         // Mute exception handler middleware
         // https://github.com/dotnet/aspnetcore/issues/19740
         WebApplicationBuilder.Logging.AddFilter(

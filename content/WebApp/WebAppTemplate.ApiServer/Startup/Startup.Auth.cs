@@ -1,9 +1,7 @@
 using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using MoonCore.Extended.JwtInvalidation;
-using WebAppTemplate.ApiServer.Implementations;
 using WebAppTemplate.ApiServer.Implementations.LocalAuth;
+using WebAppTemplate.ApiServer.Services;
 
 namespace WebAppTemplate.ApiServer.Startup;
 
@@ -72,20 +70,17 @@ public partial class Startup
                         .ExecuteAsync(context.HttpContext);
                 };
 
-                options.Events.OnValidatePrincipal += async context =>
+                options.Events.OnSigningIn = async context =>
                 {
-                    if(context.Principal == null)
-                        return;
-                    
                     var userSyncService = context
                         .HttpContext
                         .RequestServices
                         .GetRequiredService<UserSyncService>();
-                    
-                    var syncResult = await userSyncService.Sync(context.Principal);
-                    
-                    if (!syncResult) // Declare invalid
-                        context.RejectPrincipal();
+
+                    var result = await userSyncService.Sync(context.Principal!);
+
+                    if (!result)
+                        context.Principal = new();
                 };
 
                 options.Cookie = new CookieBuilder()
@@ -100,11 +95,13 @@ public partial class Startup
                 options.ForwardAuthenticate = "Session";
                 options.ForwardSignIn = "Session";
                 options.ForwardSignOut = "Session";
-        
+
                 options.SignInScheme = "Session";
             });
 
         WebApplicationBuilder.Services.AddAuthorization();
+
+        WebApplicationBuilder.Services.AddScoped<UserSyncService>();
 
         return Task.CompletedTask;
     }

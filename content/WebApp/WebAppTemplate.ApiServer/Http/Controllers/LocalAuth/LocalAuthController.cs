@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -21,18 +20,21 @@ public class LocalAuthController : Controller
     private readonly IServiceProvider ServiceProvider;
     private readonly IAuthenticationService AuthenticationService;
     private readonly IOptionsMonitor<LocalAuthOptions> Options;
+    private readonly ILogger<LocalAuthController> Logger;
 
     public LocalAuthController(
         DatabaseRepository<User> userRepository,
         IServiceProvider serviceProvider,
         IAuthenticationService authenticationService,
-        IOptionsMonitor<LocalAuthOptions> options
+        IOptionsMonitor<LocalAuthOptions> options,
+        ILogger<LocalAuthController> logger
     )
     {
         UserRepository = userRepository;
         ServiceProvider = serviceProvider;
         AuthenticationService = authenticationService;
         Options = options;
+        Logger = logger;
     }
 
     [HttpGet]
@@ -60,10 +62,10 @@ public class LocalAuthController : Controller
         {
             // Perform login
             var user = await InternalLogin(email, password);
-            
+
             // Login user
             var options = Options.Get(LocalAuthConstants.AuthenticationScheme);
-            
+
             await AuthenticationService.SignInAsync(HttpContext, options.SignInScheme, new ClaimsPrincipal(
                 new ClaimsIdentity(
                     [
@@ -80,19 +82,23 @@ public class LocalAuthController : Controller
         }
         catch (Exception e)
         {
-            var errorMessage = e is HttpRequestException apiException
-                ? apiException.Message
-                : "An internal error occured";
-            
-            var html = await ComponentHelper.RenderComponent<Login>(ServiceProvider, parameters =>
+            string errorMessage;
+
+            if (e is HttpApiException apiException)
+                errorMessage = apiException.Message;
+            else
             {
-                parameters["ErrorMessage"] = errorMessage;
-            });
+                errorMessage = "An internal error occured";
+                Logger.LogError(e, "An unhandled error occured while logging in user");
+            }
+
+            var html = await ComponentHelper.RenderComponent<Login>(ServiceProvider,
+                parameters => { parameters["ErrorMessage"] = errorMessage; });
 
             return Results.Content(html, "text/html");
         }
     }
-    
+
     [HttpPost("register")]
     public async Task<IResult> Register([FromForm] string email, [FromForm] string password, [FromForm] string username)
     {
@@ -100,10 +106,10 @@ public class LocalAuthController : Controller
         {
             // Perform register
             var user = await InternalRegister(username, email, password);
-            
+
             // Login user
             var options = Options.Get(LocalAuthConstants.AuthenticationScheme);
-            
+
             await AuthenticationService.SignInAsync(HttpContext, options.SignInScheme, new ClaimsPrincipal(
                 new ClaimsIdentity(
                     [
@@ -120,14 +126,18 @@ public class LocalAuthController : Controller
         }
         catch (Exception e)
         {
-            var errorMessage = e is HttpRequestException apiException
-                ? apiException.Message
-                : "An internal error occured";
-            
-            var html = await ComponentHelper.RenderComponent<Register>(ServiceProvider, parameters =>
+            string errorMessage;
+
+            if (e is HttpApiException apiException)
+                errorMessage = apiException.Message;
+            else
             {
-                parameters["ErrorMessage"] = errorMessage;
-            });
+                errorMessage = "An internal error occured";
+                Logger.LogError(e, "An unhandled error occured while logging in user");
+            }
+
+            var html = await ComponentHelper.RenderComponent<Register>(ServiceProvider,
+                parameters => { parameters["ErrorMessage"] = errorMessage; });
 
             return Results.Content(html, "text/html");
         }

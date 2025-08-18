@@ -6,12 +6,12 @@ namespace WebAppTemplate.ApiServer.Configuration;
 public class AppConfiguration
 {
     [YamlMember(Description = "The url WebAppTemplate is accessible through")]
-    public string PublicUrl { get; set; } = "http://localhost:5265";
+    public string PublicUrl { get; set; } = "http://localhost:5266";
     
-    [YamlMember(Description = "The postgres database credentials the application should use")]
+    [YamlMember(Description = "\nThe postgres database credentials the application should use")]
     public DatabaseConfig Database { get; set; } = new();
     
-    [YamlMember(Description = "The authentication and oauth2 settings to use for the login flow")]
+    [YamlMember(Description = "\nThe authentication and oauth2 settings to use for the login flow")]
     public AuthenticationConfig Authentication { get; set; } = new();
     
     public class DatabaseConfig
@@ -29,7 +29,7 @@ public class AppConfiguration
     {
         public string Secret { get; set; } = Formatter.GenerateString(32);
 
-        [YamlMember(Description = "This section configures the behavior of user sessions\n")]
+        [YamlMember(Description = "\nThis section configures the behavior of user sessions")]
         public SessionsConfig Sessions { get; set; } = new();
     }
     

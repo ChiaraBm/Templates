@@ -50,7 +50,7 @@ public class AuthController : Controller
                     statusCode: 404
                 )
                 .ExecuteAsync(HttpContext);
-            
+
             return;
         }
 
@@ -70,12 +70,14 @@ public class AuthController : Controller
         var username = HttpContext.User.FindFirstValue(ClaimTypes.Name)!;
         var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var email = HttpContext.User.FindFirstValue(ClaimTypes.Email)!;
+        var userId = HttpContext.User.FindFirstValue("UserId")!;
 
         var claims = new Dictionary<string, string>
         {
             { ClaimTypes.Name, username },
             { ClaimTypes.NameIdentifier, id },
-            { ClaimTypes.Email, email }
+            { ClaimTypes.Email, email },
+            { "UserId", userId }
         };
 
         return Task.FromResult(claims);
