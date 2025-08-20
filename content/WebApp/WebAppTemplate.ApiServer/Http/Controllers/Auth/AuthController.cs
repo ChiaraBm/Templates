@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebAppTemplate.ApiServer.Implementations.LocalAuth;
 using WebAppTemplate.Shared.Http.Responses.Auth;
 
 namespace WebAppTemplate.ApiServer.Http.Controllers.Auth;
@@ -13,7 +14,7 @@ public class AuthController : Controller
     private readonly IAuthenticationSchemeProvider SchemeProvider;
 
     // Add schemes which should be offered to the client here
-    private readonly string[] SchemeWhitelist = ["LocalAuth"];
+    private readonly string[] SchemeWhitelist = [LocalAuthConstants.AuthenticationScheme];
 
     public AuthController(IAuthenticationSchemeProvider schemeProvider)
     {

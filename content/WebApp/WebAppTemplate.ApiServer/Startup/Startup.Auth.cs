@@ -1,4 +1,5 @@
 using System.Text;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
 using WebAppTemplate.ApiServer.Implementations.LocalAuth;
 using WebAppTemplate.ApiServer.Services;
@@ -48,6 +49,14 @@ public partial class Startup
             {
                 options.ExpireTimeSpan = TimeSpan.FromDays(Configuration.Authentication.Sessions.ExpiresIn);
 
+                options.Cookie = new CookieBuilder()
+                {
+                    Name = Configuration.Authentication.Sessions.CookieName,
+                    Path = "/",
+                    IsEssential = true,
+                    SecurePolicy = CookieSecurePolicy.SameAsRequest
+                };
+
                 // As redirects won't work in our spa which uses API calls
                 // we need to customize the responses when certain actions happen
                 options.Events.OnRedirectToLogin = async context =>
@@ -81,6 +90,8 @@ public partial class Startup
 
                     if (!result)
                         context.Principal = new();
+                    else
+                        context.Properties.IsPersistent = true;
                 };
 
                 options.Events.OnValidatePrincipal = async context =>
@@ -95,13 +106,6 @@ public partial class Startup
                     if (!result)
                         context.RejectPrincipal();
                 };
-
-                options.Cookie = new CookieBuilder()
-                {
-                    Name = Configuration.Authentication.Sessions.CookieName,
-                    Path = "/",
-                    HttpOnly = true
-                };
             })
             .AddScheme<LocalAuthOptions, LocalAuthHandler>(LocalAuthConstants.AuthenticationScheme, null, options =>
             {
@@ -115,6 +119,18 @@ public partial class Startup
         WebApplicationBuilder.Services.AddAuthorization();
 
         WebApplicationBuilder.Services.AddScoped<UserAuthService>();
+
+        // Setup data protection storage within storage folder
+        // so its persists in containers
+        var dpKeyPath = Path.Combine("storage", "dataProtectionKeys");
+
+        Directory.CreateDirectory(dpKeyPath);
+
+        WebApplicationBuilder.Services
+            .AddDataProtection()
+            .PersistKeysToFileSystem(
+                new DirectoryInfo(dpKeyPath)
+            );
 
         return Task.CompletedTask;
     }
