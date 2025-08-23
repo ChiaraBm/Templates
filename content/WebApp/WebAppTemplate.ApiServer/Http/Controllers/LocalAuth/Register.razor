@@ -1,0 +1,63 @@
+<html lang="en" class="h-full bg-base-300">
+<head>
+    <title>Register a new account</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" type="text/css" href="/style.min.css"/>
+</head>
+<body class="h-full">
+
+<div class="flex h-auto min-h-screen items-center justify-center overflow-x-hidden bg-background py-10">
+    <div class="relative flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div
+            class="bg-base-100 shadow-base-300/20 z-1 w-full space-y-6 rounded-xl p-6 shadow-md sm:min-w-md lg:p-8">
+            <div class="flex justify-center items-center gap-3">
+                <img src="/placeholder.jpg" class="size-12" alt="brand-logo"/>
+            </div>
+            <div class="text-center">
+                <h3 class="text-base-content mb-1.5 text-2xl font-semibold">Register a new account</h3>
+                <p class="text-base-content/80">After signing up you will be able to manage your services</p>
+            </div>
+            <div class="space-y-4">
+
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="alert alert-error text-center">
+                        @ErrorMessage
+                    </div>
+                }
+
+                <form class="mb-4 space-y-4" method="post">
+                    <div>
+                        <label class="label-text" for="username">Username</label>
+                        <input type="text" name="username" placeholder="Enter your username" class="input" id="username"
+                               required/>
+                    </div>
+                    <div>
+                        <label class="label-text" for="email">Email address</label>
+                        <input type="email" name="email" placeholder="Enter your email address" class="input" id="email"
+                               required/>
+                    </div>
+                    <div>
+                        <label class="label-text" for="password">Password</label>
+                        <input class="input" name="password" id="password" type="password" placeholder="············"
+                               required/>
+                    </div>
+                    <button class="btn btn-lg btn-primary btn-gradient btn-block">Register</button>
+                </form>
+                <p class="text-base-content/80 mb-4 text-center">
+                    Already registered?
+                    <a href="/api/localauth/login"
+                       class="link link-animated link-primary font-normal">Login into your account</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+@code
+{
+    [Parameter] public string? ErrorMessage { get; set; }
+}

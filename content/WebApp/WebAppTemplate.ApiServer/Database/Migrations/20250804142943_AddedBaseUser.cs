@@ -21,7 +21,7 @@ namespace WebAppTemplate.ApiServer.Database.Migrations
                     Username = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     Password = table.Column<string>(type: "text", nullable: false),
-                    InvalidateTimestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    InvalidateTimestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
