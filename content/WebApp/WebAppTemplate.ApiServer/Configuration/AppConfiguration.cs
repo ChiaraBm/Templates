@@ -38,7 +38,7 @@ public class AppConfiguration
         [YamlMember(Description = "Specifies the cookie name used to save the session on the useragent")]
         public string CookieName { get; set; } = "session";
         
-        [YamlMember(Description = "Sets the expire time of the cookie in days")]
+        [YamlMember(Description = "Sets the expiry time of the cookie in days")]
         public int ExpiresIn { get; set; } = 10;
     }
 

@@ -13,7 +13,7 @@ public class UnauthenticatedErrorFilter : IGlobalErrorFilter
         Navigation = navigation;
     }
 
-    public Task<bool> HandleException(Exception ex)
+    public Task<bool> HandleExceptionAsync(Exception ex)
     {
         if(ex is not HttpApiException { Status: 401 })
             return Task.FromResult(false);

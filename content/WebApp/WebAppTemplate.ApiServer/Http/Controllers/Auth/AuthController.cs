@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebAppTemplate.ApiServer.Implementations.LocalAuth;
 using WebAppTemplate.Shared.Http.Responses.Auth;
 
 namespace WebAppTemplate.ApiServer.Http.Controllers.Auth;
@@ -13,7 +14,7 @@ public class AuthController : Controller
     private readonly IAuthenticationSchemeProvider SchemeProvider;
 
     // Add schemes which should be offered to the client here
-    private readonly string[] SchemeWhitelist = ["LocalAuth"];
+    private readonly string[] SchemeWhitelist = [LocalAuthConstants.AuthenticationScheme];
 
     public AuthController(IAuthenticationSchemeProvider schemeProvider)
     {
@@ -21,7 +22,7 @@ public class AuthController : Controller
     }
 
     [HttpGet]
-    public async Task<AuthSchemeResponse[]> GetSchemes()
+    public async Task<AuthSchemeResponse[]> GetSchemesAsync()
     {
         var schemes = await SchemeProvider.GetAllSchemesAsync();
 
@@ -36,7 +37,7 @@ public class AuthController : Controller
     }
 
     [HttpGet("{identifier:alpha}")]
-    public async Task StartScheme([FromRoute] string identifier)
+    public async Task StartSchemeAsync([FromRoute] string identifier)
     {
         var scheme = await SchemeProvider.GetSchemeAsync(identifier);
 
@@ -65,7 +66,7 @@ public class AuthController : Controller
 
     [Authorize]
     [HttpGet("check")]
-    public Task<AuthClaimResponse[]> Check()
+    public Task<AuthClaimResponse[]> CheckAsync()
     {
         var username = User.FindFirstValue(ClaimTypes.Name)!;
         var id = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -86,7 +87,7 @@ public class AuthController : Controller
     }
 
     [HttpGet("logout")]
-    public async Task Logout()
+    public async Task LogoutAsync()
     {
         await HttpContext.SignOutAsync();
         await Results.Redirect("/").ExecuteAsync(HttpContext);

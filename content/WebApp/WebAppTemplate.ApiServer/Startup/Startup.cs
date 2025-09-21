@@ -13,37 +13,37 @@ public partial class Startup
     private WebApplication WebApplication;
     private WebApplicationBuilder WebApplicationBuilder;
 
-    public Task Initialize(string[] args)
+    public Task InitializeAsync(string[] args)
     {
         Args = args;
 
         return Task.CompletedTask;
     }
 
-    public async Task AddWebAppTemplate(WebApplicationBuilder builder)
+    public async Task AddWebAppTemplateAsync(WebApplicationBuilder builder)
     {
         WebApplicationBuilder = builder;
 
-        await SetupStorage();
-        await SetupAppConfiguration();
+        await SetupStorageAsync();
+        await SetupAppConfigurationAsync();
 
-        await RegisterAppConfiguration();
-        await RegisterLogging();
-        await RegisterBase();
-        await RegisterDatabase();
-        await RegisterAuth();
+        await RegisterAppConfigurationAsync();
+        await RegisterLoggingAsync();
+        await RegisterBaseAsync();
+        await RegisterDatabaseAsync();
+        await RegisterAuthAsync();
     }
 
-    public async Task AddWebAppTemplate(WebApplication application)
+    public async Task AddWebAppTemplateAsync(WebApplication application)
     {
         WebApplication = application;
 
-        await PrepareDatabase();
+        await PrepareDatabaseAsync();
 
-        await UseBase();
-        await UseAuth();
-        await UseBaseMiddleware();
+        await UseBaseAsync();
+        await UseAuthAsync();
+        await UseBaseMiddlewareAsync();
 
-        await MapBase();
+        await MapBaseAsync();
     }
 }
