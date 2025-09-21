@@ -22,7 +22,7 @@ public class UserAuthService
         UserRepository = userRepository;
     }
 
-    public async Task<bool> Sync(ClaimsPrincipal? principal)
+    public async Task<bool> SyncAsync(ClaimsPrincipal? principal)
     {
         // Ignore malformed claims principal
         if (principal is not { Identity.IsAuthenticated: true })
@@ -53,7 +53,7 @@ public class UserAuthService
 
         if (user == null)
         {
-            user = await UserRepository.Add(new User()
+            user = await UserRepository.AddAsync(new User()
             {
                 Email = email,
                 InvalidateTimestamp = DateTimeOffset.UtcNow.AddMinutes(-1),
@@ -66,7 +66,7 @@ public class UserAuthService
         if (user.Username != username)
         {
             user.Username = username;
-            await UserRepository.Update(user);
+            await UserRepository.UpdateAsync(user);
         }
 
         principal.Identities.First().AddClaims([
@@ -77,7 +77,7 @@ public class UserAuthService
         return true;
     }
 
-    public async Task<bool> Validate(ClaimsPrincipal? principal)
+    public async Task<bool> ValidateAsync(ClaimsPrincipal? principal)
     {
         // Ignore malformed claims principal
         if(principal is not { Identity.IsAuthenticated: true })

@@ -2,14 +2,14 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using WebAppTemplate.Frontend.Startup;
 
 var startup = new Startup();
-await startup.Initialize();
+await startup.InitializeAsync();
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-await startup.AddWebAppTemplate(builder);
+await startup.AddWebAppTemplateAsync(builder);
 
 var app = builder.Build();
 
-await startup.AddWebAppTemplate(app);
+await startup.AddWebAppTemplateAsync(app);
 
 await app.RunAsync();

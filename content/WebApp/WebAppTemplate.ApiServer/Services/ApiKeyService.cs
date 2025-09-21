@@ -14,7 +14,7 @@ public class ApiKeyService
         Configuration = configuration;
     }
 
-    public Task<string> Generate(Action<Dictionary<string, object>> onConfigure, DateTimeOffset validUntil)
+    public Task<string> GenerateAsync(Action<Dictionary<string, object>> onConfigure, DateTimeOffset validUntil)
     {
         var claims = new Dictionary<string, object>();
 

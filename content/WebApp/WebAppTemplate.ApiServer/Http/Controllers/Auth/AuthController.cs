@@ -22,7 +22,7 @@ public class AuthController : Controller
     }
 
     [HttpGet]
-    public async Task<AuthSchemeResponse[]> GetSchemes()
+    public async Task<AuthSchemeResponse[]> GetSchemesAsync()
     {
         var schemes = await SchemeProvider.GetAllSchemesAsync();
 
@@ -37,7 +37,7 @@ public class AuthController : Controller
     }
 
     [HttpGet("{identifier:alpha}")]
-    public async Task StartScheme([FromRoute] string identifier)
+    public async Task StartSchemeAsync([FromRoute] string identifier)
     {
         var scheme = await SchemeProvider.GetSchemeAsync(identifier);
 
@@ -66,7 +66,7 @@ public class AuthController : Controller
 
     [Authorize]
     [HttpGet("check")]
-    public Task<AuthClaimResponse[]> Check()
+    public Task<AuthClaimResponse[]> CheckAsync()
     {
         var username = User.FindFirstValue(ClaimTypes.Name)!;
         var id = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -87,7 +87,7 @@ public class AuthController : Controller
     }
 
     [HttpGet("logout")]
-    public async Task Logout()
+    public async Task LogoutAsync()
     {
         await HttpContext.SignOutAsync();
         await Results.Redirect("/").ExecuteAsync(HttpContext);

@@ -8,7 +8,7 @@ namespace WebAppTemplate.ApiServer.Startup;
 
 public partial class Startup
 {
-    private Task RegisterAuth()
+    private Task RegisterAuthAsync()
     {
         WebApplicationBuilder.Services
             .AddAuthentication(options => { options.DefaultScheme = "MainScheme"; })
@@ -18,15 +18,19 @@ public partial class Startup
                 // we want to use the ApiKey scheme for authenticating the request
                 options.ForwardDefaultSelector = context =>
                 {
-                    if (!context.Request.Headers.TryGetValue("Authorization", out var authHeader))
-                        return "Session";
+                    var headers = context.Request.Headers;
+       
+                    // For regular api calls
+                    if (headers.ContainsKey("Authorization"))
+                        return "ApiKey";
+ 
+                    // For websocket requests which cannot use the Authorization header
+                    // so we fallback to the access_token
+                    if (headers.Upgrade == "websocket" && headers.Connection == "Upgrade" && context.Request.Query.ContainsKey("access_token"))
+                        return "ApiKey";
 
-                    var auth = authHeader.FirstOrDefault();
-
-                    if (string.IsNullOrEmpty(auth) || !auth.StartsWith("Bearer "))
-                        return "Session";
-
-                    return "ApiKey";
+                    // Regular user traffic/auth
+                    return "Session";
                 };
             })
             .AddJwtBearer("ApiKey", null, options =>
@@ -86,7 +90,7 @@ public partial class Startup
                         .RequestServices
                         .GetRequiredService<UserAuthService>();
 
-                    var result = await userSyncService.Sync(context.Principal);
+                    var result = await userSyncService.SyncAsync(context.Principal);
 
                     if (!result)
                         context.Principal = new();
@@ -101,7 +105,7 @@ public partial class Startup
                         .RequestServices
                         .GetRequiredService<UserAuthService>();
 
-                    var result = await userSyncService.Validate(context.Principal);
+                    var result = await userSyncService.ValidateAsync(context.Principal);
 
                     if (!result)
                         context.RejectPrincipal();
@@ -135,7 +139,7 @@ public partial class Startup
         return Task.CompletedTask;
     }
 
-    private Task UseAuth()
+    private Task UseAuthAsync()
     {
         WebApplication.UseAuthentication();
         WebApplication.UseAuthorization();

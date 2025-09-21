@@ -39,29 +39,29 @@ public class LocalAuthController : Controller
 
     [HttpGet]
     [HttpGet("login")]
-    public async Task<IResult> Login()
+    public async Task<ActionResult> LoginAsync()
     {
-        var html = await ComponentHelper.RenderComponent<Login>(ServiceProvider);
+        var html = await ComponentHelper.RenderToHtmlAsync<Login>(ServiceProvider);
 
-        return Results.Content(html, "text/html");
+        return Content(html, "text/html");
     }
 
     [HttpGet("register")]
-    public async Task<IResult> Register()
+    public async Task<ActionResult> RegisterAsync()
     {
-        var html = await ComponentHelper.RenderComponent<Register>(ServiceProvider);
+        var html = await ComponentHelper.RenderToHtmlAsync<Register>(ServiceProvider);
 
-        return Results.Content(html, "text/html");
+        return Content(html, "text/html");
     }
 
     [HttpPost]
     [HttpPost("login")]
-    public async Task<IResult> Login([FromForm] string email, [FromForm] string password)
+    public async Task<ActionResult> LoginAsync([FromForm] string email, [FromForm] string password)
     {
         try
         {
             // Perform login
-            var user = await InternalLogin(email, password);
+            var user = await InternalLoginAsync(email, password);
 
             // Login user
             var options = Options.Get(LocalAuthConstants.AuthenticationScheme);
@@ -78,34 +78,34 @@ public class LocalAuthController : Controller
             ), new AuthenticationProperties());
 
             // Redirect back to wasm app
-            return Results.Redirect("/");
+            return Redirect("/");
         }
         catch (Exception e)
         {
             string errorMessage;
 
-            if (e is HttpApiException apiException)
-                errorMessage = apiException.Title;
+            if (e is AggregateException aggregateException)
+                errorMessage = aggregateException.Message;
             else
             {
                 errorMessage = "An internal error occured";
                 Logger.LogError(e, "An unhandled error occured while logging in user");
             }
 
-            var html = await ComponentHelper.RenderComponent<Login>(ServiceProvider,
+            var html = await ComponentHelper.RenderToHtmlAsync<Login>(ServiceProvider,
                 parameters => { parameters["ErrorMessage"] = errorMessage; });
 
-            return Results.Content(html, "text/html");
+            return Content(html, "text/html");
         }
     }
 
     [HttpPost("register")]
-    public async Task<IResult> Register([FromForm] string email, [FromForm] string password, [FromForm] string username)
+    public async Task<ActionResult> RegisterAsync([FromForm] string email, [FromForm] string password, [FromForm] string username)
     {
         try
         {
             // Perform register
-            var user = await InternalRegister(username, email, password);
+            var user = await InternalRegisterAsync(username, email, password);
 
             // Login user
             var options = Options.Get(LocalAuthConstants.AuthenticationScheme);
@@ -122,34 +122,34 @@ public class LocalAuthController : Controller
             ), new AuthenticationProperties());
 
             // Redirect back to wasm app
-            return Results.Redirect("/");
+            return Redirect("/");
         }
         catch (Exception e)
         {
             string errorMessage;
 
-            if (e is HttpApiException apiException)
-                errorMessage = apiException.Title;
+            if (e is AggregateException aggregateException)
+                errorMessage = aggregateException.Message;
             else
             {
                 errorMessage = "An internal error occured";
                 Logger.LogError(e, "An unhandled error occured while logging in user");
             }
 
-            var html = await ComponentHelper.RenderComponent<Register>(ServiceProvider,
+            var html = await ComponentHelper.RenderToHtmlAsync<Register>(ServiceProvider,
                 parameters => { parameters["ErrorMessage"] = errorMessage; });
 
-            return Results.Content(html, "text/html");
+            return Content(html, "text/html");
         }
     }
 
-    private async Task<User> InternalRegister(string username, string email, string password)
+    private async Task<User> InternalRegisterAsync(string username, string email, string password)
     {
         if (await UserRepository.Get().AnyAsync(x => x.Username == username))
-            throw new HttpApiException("A account with that username already exists", 400);
+            throw new AggregateException("A account with that username already exists");
 
         if (await UserRepository.Get().AnyAsync(x => x.Email == email))
-            throw new HttpApiException("A account with that email already exists", 400);
+            throw new AggregateException("A account with that email already exists");
 
         var user = new User()
         {
@@ -158,22 +158,22 @@ public class LocalAuthController : Controller
             Password = HashHelper.Hash(password)
         };
 
-        var finalUser = await UserRepository.Add(user);
+        var finalUser = await UserRepository.AddAsync(user);
 
         return finalUser;
     }
 
-    private async Task<User> InternalLogin(string email, string password)
+    private async Task<User> InternalLoginAsync(string email, string password)
     {
         var user = await UserRepository
             .Get()
             .FirstOrDefaultAsync(x => x.Email == email);
 
         if (user == null)
-            throw new HttpApiException("Invalid combination of email and password", 400);
+            throw new AggregateException("Invalid combination of email and password");
 
         if (!HashHelper.Verify(password, user.Password))
-            throw new HttpApiException("Invalid combination of email and password", 400);
+            throw new AggregateException("Invalid combination of email and password");
 
         return user;
     }

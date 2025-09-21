@@ -8,22 +8,22 @@ public partial class Startup
     public WebAssemblyHostBuilder WebAssemblyHostBuilder { get; private set; }
     public WebAssemblyHost WebAssemblyHost { get; private set; }
     
-    public Task Initialize()
+    public Task InitializeAsync()
     {
         return Task.CompletedTask;
     }
     
-    public async Task AddWebAppTemplate(WebAssemblyHostBuilder builder)
+    public async Task AddWebAppTemplateAsync(WebAssemblyHostBuilder builder)
     {
         WebAssemblyHostBuilder = builder;
         
-        await RegisterLogging();
-        await RegisterBase();
-        await RegisterAuthentication();
+        await RegisterLoggingAsync();
+        await RegisterBaseAsync();
+        await RegisterAuthenticationAsync();
         
     }
     
-    public Task AddWebAppTemplate(WebAssemblyHost assemblyHost)
+    public Task AddWebAppTemplateAsync(WebAssemblyHost assemblyHost)
     {
         return Task.CompletedTask;
     }

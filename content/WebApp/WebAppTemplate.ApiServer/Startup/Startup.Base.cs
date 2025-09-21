@@ -5,7 +5,7 @@ namespace WebAppTemplate.ApiServer.Startup;
 
 public partial class Startup
 {
-    private Task RegisterBase()
+    private Task RegisterBaseAsync()
     {
         WebApplicationBuilder.Services.AutoAddServices<Startup>();
         WebApplicationBuilder.Services.AddControllers();
@@ -15,7 +15,7 @@ public partial class Startup
         return Task.CompletedTask;
     }
     
-    private Task UseBase()
+    private Task UseBaseAsync()
     {
         WebApplication.UseRouting();
         WebApplication.UseExceptionHandler();
@@ -26,12 +26,12 @@ public partial class Startup
         return Task.CompletedTask;
     }
     
-    private Task UseBaseMiddleware()
+    private Task UseBaseMiddlewareAsync()
     {
         return Task.CompletedTask;
     }
 
-    private Task MapBase()
+    private Task MapBaseAsync()
     {
         WebApplication.MapControllers();
         WebApplication.MapFallbackToFile("index.html");

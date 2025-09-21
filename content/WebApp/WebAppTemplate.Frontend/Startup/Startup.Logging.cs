@@ -4,7 +4,7 @@ namespace WebAppTemplate.Frontend.Startup;
 
 public partial class Startup
 {
-    private Task RegisterLogging()
+    private Task RegisterLoggingAsync()
     {
         WebAssemblyHostBuilder.Logging.ClearProviders();
         WebAssemblyHostBuilder.Logging.AddAnsiConsole();

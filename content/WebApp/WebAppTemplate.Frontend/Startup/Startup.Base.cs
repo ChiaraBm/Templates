@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components.Web;
 using MoonCore.Blazor.FlyonUi;
-using MoonCore.Blazor.Services;
 using MoonCore.Extensions;
 using MoonCore.Helpers;
 using WebAppTemplate.Frontend.UI;
@@ -9,7 +8,7 @@ namespace WebAppTemplate.Frontend.Startup;
 
 public partial class Startup
 {
-    private Task RegisterBase()
+    private Task RegisterBaseAsync()
     {
         WebAssemblyHostBuilder.RootComponents.Add<App>("#app");
         WebAssemblyHostBuilder.RootComponents.Add<HeadOutlet>("head::after");
@@ -28,7 +27,6 @@ public partial class Startup
         });
         
         WebAssemblyHostBuilder.Services.AddFlyonUiServices();
-        WebAssemblyHostBuilder.Services.AddScoped<LocalStorageService>();
 
         WebAssemblyHostBuilder.Services.AutoAddServices<Startup>();
 
