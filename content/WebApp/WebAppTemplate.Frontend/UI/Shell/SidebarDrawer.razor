@@ -1,13 +1,32 @@
 @inherits MoonCore.Blazor.FlyonUi.Drawers.DrawerBase
 
-<div @onclick="OnClicked" class="h-full">
-    <SidebarComponent />
-</div>
+@inject NavigationManager Navigation
 
-@code
+@implements IDisposable
+
+<SidebarComponent />
+
+@code 
 {
-    private async Task OnClicked()
+    protected override void OnInitialized()
     {
-        await CloseAsync();
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        try
+        {
+            await CloseAsync();
+        }
+        catch (Exception)
+        {
+            // Ignored
+        }
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
     }
 }
