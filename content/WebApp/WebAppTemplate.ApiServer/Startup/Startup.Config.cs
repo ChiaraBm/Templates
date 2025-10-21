@@ -6,29 +6,20 @@ namespace WebAppTemplate.ApiServer.Startup;
 
 public partial class Startup
 {
-    private async Task SetupAppConfigurationAsync()
+    private static void AddAppConfiguration(this WebApplicationBuilder builder)
     {
-        // Configure configuration (wow)
-        var configurationBuilder = new ConfigurationBuilder();
-        
         // Ensure configuration file exists
         var configPath = Path.Combine(Directory.GetCurrentDirectory(), "storage", "config.yml");
 
-        await YamlDefaultGenerator.GenerateAsync<AppConfiguration>(configPath);
+        YamlDefaultGenerator.Generate<AppConfiguration>(configPath);
 
-        configurationBuilder.AddYamlFile(configPath);
-        configurationBuilder.AddEnvironmentVariables(prefix: "WebAppTemplate_".ToUpper(), separator: "_");
-
-        var configurationRoot = configurationBuilder.Build();
+        builder.Configuration.AddYamlFile(configPath);
+        builder.Configuration.AddEnvironmentVariables(prefix: "WebAppTemplate_".ToUpper(), separator: "_");
 
         // Retrieve configuration
-        Configuration = AppConfiguration.CreateEmpty();
-        configurationRoot.Bind(Configuration);
-    }
+        var configuration = AppConfiguration.CreateEmpty();
+        builder.Configuration.Bind(configuration);
 
-    private Task RegisterAppConfigurationAsync()
-    {
-        WebApplicationBuilder.Services.AddSingleton(Configuration);
-        return Task.CompletedTask;
+        builder.Services.AddSingleton(configuration);
     }
 }

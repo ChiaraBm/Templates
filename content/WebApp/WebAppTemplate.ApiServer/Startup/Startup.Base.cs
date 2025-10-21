@@ -5,37 +5,26 @@ namespace WebAppTemplate.ApiServer.Startup;
 
 public partial class Startup
 {
-    private Task RegisterBaseAsync()
+    private static void AddBase(this WebApplicationBuilder builder)
     {
-        WebApplicationBuilder.Services.AutoAddServices<Startup>();
-        WebApplicationBuilder.Services.AddControllers();
+        builder.Services.AutoAddServices<IAssemblyMarker>();
+        builder.Services.AddControllers();
 
-        WebApplicationBuilder.Services.AddApiExceptionHandler();
-
-        return Task.CompletedTask;
+        builder.Services.AddApiExceptionHandler();
     }
     
-    private Task UseBaseAsync()
+    private static void UseBase(this WebApplication app)
     {
-        WebApplication.UseRouting();
-        WebApplication.UseExceptionHandler();
+        app.UseRouting();
+        app.UseExceptionHandler();
 
-        WebApplication.UseBlazorFrameworkFiles();
-        WebApplication.UseStaticFiles();
-
-        return Task.CompletedTask;
-    }
-    
-    private Task UseBaseMiddlewareAsync()
-    {
-        return Task.CompletedTask;
+        app.UseBlazorFrameworkFiles();
+        app.UseStaticFiles();
     }
 
-    private Task MapBaseAsync()
+    private static void MapBase(this WebApplication app)
     {
-        WebApplication.MapControllers();
-        WebApplication.MapFallbackToFile("index.html");
-
-        return Task.CompletedTask;
+        app.MapControllers();
+        app.MapFallbackToFile("index.html");
     }
 }

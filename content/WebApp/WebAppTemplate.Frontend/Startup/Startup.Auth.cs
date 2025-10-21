@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MoonCore.Blazor.FlyonUi.Exceptions;
 using WebAppTemplate.Frontend.Implementations;
 using WebAppTemplate.Frontend.Services;
@@ -8,15 +9,13 @@ namespace WebAppTemplate.Frontend.Startup;
 
 public partial class Startup
 {
-    private Task RegisterAuthenticationAsync()
+    private static void AddAuthentication(this WebAssemblyHostBuilder builder)
     {
-        WebAssemblyHostBuilder.Services.AddAuthorizationCore();
-        WebAssemblyHostBuilder.Services.AddCascadingAuthenticationState();
+        builder.Services.AddAuthorizationCore();
+        builder.Services.AddCascadingAuthenticationState();
         
-        WebAssemblyHostBuilder.Services.AddScoped<AuthenticationStateProvider, RemoteAuthStateProvider>();
+        builder.Services.AddScoped<AuthenticationStateProvider, RemoteAuthStateProvider>();
 
-        WebAssemblyHostBuilder.Services.AddScoped<IGlobalErrorFilter, UnauthenticatedErrorFilter>();
-        
-        return Task.CompletedTask;
+        builder.Services.AddScoped<IGlobalErrorFilter, UnauthenticatedErrorFilter>();
     }
 }

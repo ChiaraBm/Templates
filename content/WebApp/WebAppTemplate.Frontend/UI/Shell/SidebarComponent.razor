@@ -1,0 +1,150 @@
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject NavigationManager Navigation
+
+@{
+    var url = new Uri(Navigation.Uri);
+}
+
+<nav class="flex h-full min-h-0 flex-col">
+    <div class="flex flex-col border-b p-4 border-base-content/5">
+            <span class="relative">
+                <div type="button"
+                     class="flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-lg font-medium text-base-content">
+                    <span
+                        class="inline-grid shrink-0 align-middle">
+                        <img class="h-8 rounded-full"
+                             src="/placeholder.jpg"
+                             alt=""/>
+                    </span>
+                    <span class="truncate">WebAppTemplate</span>
+                </div>
+            </span>
+    </div>
+    <div class="flex flex-1 flex-col overflow-y-auto p-4 mt-1">
+        <div class="flex flex-col gap-1.5">
+            @foreach (var item in Items)
+            {
+                if (!string.IsNullOrEmpty(item.Key))
+                {
+                    <h3 class="mt-4 px-2 text-sm/5 font-medium text-base-content/40">
+                        @item.Key
+                    </h3>
+                }
+
+                foreach (var sidebarItem in item.Value)
+                {
+                    var isMatch = sidebarItem.RequiresExactMatch
+                        ? url.LocalPath == sidebarItem.Path
+                        : url.LocalPath.StartsWith(sidebarItem.Path);
+
+                    @if (isMatch)
+                    {
+                        <div class="relative">
+                                <span class="absolute inset-y-2 -left-4 w-0.5 rounded-full bg-primary"
+                                      style="opacity: 1;">
+                                </span>
+                            <a class="flex w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-base/6 font-normal bg-primary/5 sm:py-2 sm:text-sm/5 text-base-content"
+                               href="@sidebarItem.Path">
+                                <i class="@sidebarItem.Icon text-lg"></i>
+                                <span class="truncate">
+                                        @sidebarItem.Name
+                                    </span>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="relative">
+                            <a class="flex w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-base/6 font-normal sm:py-2 sm:text-sm/5 text-base-content hover:bg-primary/5"
+                               href="@sidebarItem.Path">
+                                <i class="@sidebarItem.Icon text-lg"></i>
+                                <span class="truncate">
+                                        @sidebarItem.Name
+                                    </span>
+                            </a>
+                        </div>
+                    }
+                }
+            }
+        </div>
+    </div>
+    <div class="flex flex-col border-t p-4 border-base-content/5 mt-2.5">
+        <div
+            class="flex w-full justify-between items-center px-2 py-2.5 gap-6 rounded-lg text-left text-base/6 font-medium sm:py-2 sm:text-sm/5 text-base-content">
+            <div class="flex min-w-0 items-center gap-3">
+                    <span class="inline-grid shrink-0 align-middle">
+                        <img class="h-8 rounded-full"
+                             src="/placeholder.jpg"
+                             alt=""/>
+                    </span>
+                <div class="min-w-0">
+                    <div class="block truncate text-sm/5 font-medium text-base-content">
+                        @Username
+                    </div>
+                    <div class="block truncate text-xs/5 font-normal text-base-content/40">
+                        @Email
+                    </div>
+                </div>
+            </div>
+            <a href="#" @onclick:preventDefault @onclick="LogoutAsync" class="flex items-center">
+                <i class="icon-log-out text-lg"></i>
+            </a>
+        </div>
+    </div>
+</nav>
+
+@code
+{
+    [CascadingParameter] public Task<AuthenticationState> AuthState { get; set; }
+
+    private Dictionary<string, SidebarItem[]> Items;
+    
+    private string Username;
+    private string Email;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var identity = await AuthState;
+
+        Username = identity.User.FindFirst(ClaimTypes.Name)!.Value;
+        Email = identity.User.FindFirst(ClaimTypes.Email)!.Value;
+    }
+
+    protected override void OnInitialized()
+    {
+        SidebarItem[] items =
+        [
+            new()
+            {
+                Name = "Dashboard",
+                Path = "/",
+                RequiresExactMatch = true,
+                Icon = "icon-layout-dashboard",
+                Priority = 0
+            }
+        ];
+
+        Items = items
+            .GroupBy(x => x.Group ?? "")
+            .OrderByDescending(x => string.IsNullOrEmpty(x.Key))
+            .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Priority).ToArray());
+    }
+    
+    private Task LogoutAsync()
+    {
+        Navigation.NavigateTo("/api/auth/logout", true);
+        return Task.CompletedTask;
+    }
+
+    record SidebarItem
+    {
+        public string? Group { get; set; }
+        public int Priority { get; set; }
+        public string Icon { get; set; }
+        public string Path { get; set; }
+        public string Name { get; set; }
+        public bool RequiresExactMatch { get; set; }
+    }
+}

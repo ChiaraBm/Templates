@@ -1,9 +1,11 @@
-@using WebAppTemplate.Frontend.UI.Layouts
+@using MoonCore.Blazor.FlyonUi.Drawers
+
+@inject DrawerService DrawerService
 
 <header class="flex items-center px-4 lg:hidden border-b border-base-content/5">
     <div class="py-2.5">
         <span class="relative">
-            <button @onclick="Layout.ToggleMobileNavigationAsync" aria-label="Open navigation"
+            <button @onclick="LaunchSidebarAsync" aria-label="Open navigation"
                     class="relative flex min-w-0 items-center gap-3 rounded-lg p-2 text-left text-base/6 sm:text-sm/5 text-base-content"
                     type="button">
                 <i class="icon-menu text-xl"></i>
@@ -33,15 +35,8 @@
 
 @code
 {
-    [Parameter] public MainLayout Layout { get; set; }
-
-    protected override Task OnAfterRenderAsync(bool firstRender)
+    private async Task LaunchSidebarAsync()
     {
-        if (!firstRender)
-            return Task.CompletedTask;
-
-        Layout.OnStateChanged += () => InvokeAsync(StateHasChanged);
-
-        return Task.CompletedTask;
+        await DrawerService.LaunchAsync<SidebarDrawer>(unfocusHide: true);
     }
 }
