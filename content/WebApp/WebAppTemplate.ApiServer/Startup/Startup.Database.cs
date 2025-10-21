@@ -6,22 +6,13 @@ namespace WebAppTemplate.ApiServer.Startup;
 
 public partial class Startup
 {
-    private Task RegisterDatabaseAsync()
+    private static void AddDatabase(this WebApplicationBuilder builder)
     {
-        WebApplicationBuilder.Services.AddDatabaseMappings();
-        WebApplicationBuilder.Services.AddServiceCollectionAccessor();
+        builder.Services.AddDatabaseMappings();
+        builder.Services.AddDbAutoMigrations();
 
-        WebApplicationBuilder.Services.AddDbContext<DataContext>();
+        builder.Services.AddDbContext<DataContext>();
         
-        WebApplicationBuilder.Services.AddScoped(typeof(DatabaseRepository<>));
-
-        return Task.CompletedTask;
-    }
-
-    private async Task PrepareDatabaseAsync()
-    {
-        await WebApplication.Services.EnsureDatabaseMigratedAsync();
-        
-        WebApplication.Services.GenerateDatabaseMappings();
+        builder.Services.AddScoped(typeof(DatabaseRepository<>));
     }
 }

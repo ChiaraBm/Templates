@@ -5,11 +5,11 @@ namespace WebAppTemplate.ApiServer.Startup;
 
 public partial class Startup
 {
-    private async Task RegisterLoggingAsync()
+    private static void AddLogging(this WebApplicationBuilder builder)
     {
         // Configure application logging
-        WebApplicationBuilder.Logging.ClearProviders();
-        WebApplicationBuilder.Logging.AddAnsiConsole();
+        builder.Logging.ClearProviders();
+        builder.Logging.AddAnsiConsole();
 
         // Logging levels
         var logConfigPath = Path.Combine("storage", "logConfig.json");
@@ -26,27 +26,27 @@ public partial class Startup
             };
 
             var defaultJson = JsonSerializer.Serialize(defaultLogLevels);
-            await File.WriteAllTextAsync(logConfigPath, defaultJson);
+            File.WriteAllText(logConfigPath, defaultJson);
         }
 
         // Configure logging configuration
-        var logJson = await File.ReadAllTextAsync(logConfigPath);
+        var logJson = File.ReadAllText(logConfigPath);
         var logLevels = JsonSerializer.Deserialize<Dictionary<string, string>>(logJson)!;
 
         foreach (var logLevel in logLevels)
         {
             var level = Enum.Parse<LogLevel>(logLevel.Value);
-            WebApplicationBuilder.Logging.AddFilter(logLevel.Key, level);
+            builder.Logging.AddFilter(logLevel.Key, level);
         }
 
         // Mute exception handler middleware
         // https://github.com/dotnet/aspnetcore/issues/19740
-        WebApplicationBuilder.Logging.AddFilter(
+        builder.Logging.AddFilter(
             "Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddleware",
             LogLevel.Critical
         );
 
-        WebApplicationBuilder.Logging.AddFilter(
+        builder.Logging.AddFilter(
             "Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware",
             LogLevel.Critical
         );

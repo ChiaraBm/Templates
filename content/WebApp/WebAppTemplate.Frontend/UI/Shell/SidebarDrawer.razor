@@ -1,0 +1,13 @@
+@inherits MoonCore.Blazor.FlyonUi.Drawers.DrawerBase
+
+<div @onclick="OnClicked" class="h-full">
+    <SidebarComponent />
+</div>
+
+@code
+{
+    private async Task OnClicked()
+    {
+        await CloseAsync();
+    }
+}

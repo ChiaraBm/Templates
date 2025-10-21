@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MoonCore.Blazor.FlyonUi;
 using MoonCore.Extensions;
 using MoonCore.Helpers;
@@ -8,28 +9,26 @@ namespace WebAppTemplate.Frontend.Startup;
 
 public partial class Startup
 {
-    private Task RegisterBaseAsync()
+    private static void AddBase(this WebAssemblyHostBuilder builder)
     {
-        WebAssemblyHostBuilder.RootComponents.Add<App>("#app");
-        WebAssemblyHostBuilder.RootComponents.Add<HeadOutlet>("head::after");
+        builder.RootComponents.Add<App>("#app");
+        builder.RootComponents.Add<HeadOutlet>("head::after");
 
-        WebAssemblyHostBuilder.Services.AddScoped(_ =>
+        builder.Services.AddScoped(_ =>
             new HttpClient
             {
-                BaseAddress = new Uri(WebAssemblyHostBuilder.HostEnvironment.BaseAddress)
+                BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
             }
         );
 
-        WebAssemblyHostBuilder.Services.AddScoped(sp =>
+        builder.Services.AddScoped(sp =>
         {
             var httpClient = sp.GetRequiredService<HttpClient>();
             return new HttpApiClient(httpClient);
         });
         
-        WebAssemblyHostBuilder.Services.AddFlyonUiServices();
+        builder.Services.AddFlyonUiServices();
 
-        WebAssemblyHostBuilder.Services.AutoAddServices<Startup>();
-
-        return Task.CompletedTask;
+        builder.Services.AutoAddServices<IAssemblyMarker>();
     }
 }

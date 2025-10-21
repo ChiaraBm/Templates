@@ -1,49 +1,23 @@
-using WebAppTemplate.ApiServer.Configuration;
-
 namespace WebAppTemplate.ApiServer.Startup;
 
-public partial class Startup
+public static partial class Startup
 {
-    private string[] Args;
-
-    // Configuration
-    private AppConfiguration Configuration;
-
-    // WebApplication Stuff
-    private WebApplication WebApplication;
-    private WebApplicationBuilder WebApplicationBuilder;
-
-    public Task InitializeAsync(string[] args)
+    public static void AddWebAppTemplate(this WebApplicationBuilder builder)
     {
-        Args = args;
-
-        return Task.CompletedTask;
+        SetupStorage();
+        builder.AddAppConfiguration();
+        
+        builder.AddLogging();
+        builder.AddBase();
+        builder.AddDatabase();
+        builder.AddAuth();
     }
-
-    public async Task AddWebAppTemplateAsync(WebApplicationBuilder builder)
+    
+    public static void UseWebAppTemplate(this WebApplication app)
     {
-        WebApplicationBuilder = builder;
-
-        await SetupStorageAsync();
-        await SetupAppConfigurationAsync();
-
-        await RegisterAppConfigurationAsync();
-        await RegisterLoggingAsync();
-        await RegisterBaseAsync();
-        await RegisterDatabaseAsync();
-        await RegisterAuthAsync();
-    }
-
-    public async Task AddWebAppTemplateAsync(WebApplication application)
-    {
-        WebApplication = application;
-
-        await PrepareDatabaseAsync();
-
-        await UseBaseAsync();
-        await UseAuthAsync();
-        await UseBaseMiddlewareAsync();
-
-        await MapBaseAsync();
+        app.UseBase();
+        app.UseAuth();
+        
+        app.MapBase();
     }
 }

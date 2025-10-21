@@ -1,15 +1,11 @@
 using WebAppTemplate.ApiServer.Startup;
 
-var startup = new Startup();
-
-await startup.InitializeAsync(args);
-
 var builder = WebApplication.CreateBuilder(args);
 
-await startup.AddWebAppTemplateAsync(builder);
+builder.AddWebAppTemplate();
 
 var app = builder.Build();
 
-await startup.AddWebAppTemplateAsync(app);
+app.UseWebAppTemplate();
 
 await app.RunAsync();
