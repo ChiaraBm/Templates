@@ -10,7 +10,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.5" PrivateAssets="all" />
         <PackageReference Include="MoonCore" Version="2.0.6" />
-        <PackageReference Include="MoonCore.Blazor.FlyonUi" Version="1.3.3" />
+        <PackageReference Include="MoonCore.Blazor.FlyonUi" Version="1.3.4" />
         <PackageReference Include="System.Security.Claims" Version="4.3.0" />
     </ItemGroup>
 
