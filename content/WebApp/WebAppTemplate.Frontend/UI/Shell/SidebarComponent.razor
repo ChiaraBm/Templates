@@ -1,7 +1,8 @@
-@using System.Security.Claims
-@using Microsoft.AspNetCore.Components.Authorization
+@inherits MoonCore.Blazor.FlyonUi.Drawers.DrawerBase
 
 @inject NavigationManager Navigation
+
+@implements IDisposable
 
 @{
     var url = new Uri(Navigation.Uri);
@@ -10,12 +11,12 @@
 <div class="drawer-header">
     <div class="flex items-center gap-3">
         <div class="avatar">
-            <img src="/placeholder.jpg" alt="Logo" class="!size-8"/>
+            <img src="/placeholder.jpg" alt="Icon" class="size-8"/>
         </div>
         <h3 class="drawer-title text-xl font-semibold">WebAppTemplate</h3>
     </div>
 </div>
-<div class="drawer-body !px-2.5">
+<div class="drawer-body px-2.5">
     <ul class="menu menu-sm p-0 bg-transparent">
         @foreach (var group in Items)
         {
@@ -42,7 +43,7 @@
         }
     </ul>
 </div>
-<div class="drawer-footer !p-2.5">
+<div class="drawer-footer p-2.5">
     <div
         class="flex w-full justify-between items-center px-2 py-2.5 gap-6 rounded-lg text-left text-base/6 font-medium sm:py-2 sm:text-sm/5 text-base-content">
         <div class="flex min-w-0 items-center gap-3">
@@ -68,41 +69,47 @@
 
 @code
 {
-    [CascadingParameter] public Task<AuthenticationState> AuthState { get; set; }
+    private Dictionary<string, SidebarItem[]> Items = new();
 
-    private Dictionary<string, SidebarItem[]> Items;
-    
-    private string Username;
-    private string Email;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var identity = await AuthState;
-
-        Username = identity.User.FindFirst(ClaimTypes.Name)!.Value;
-        Email = identity.User.FindFirst(ClaimTypes.Email)!.Value;
-    }
+    private string Username = "demouser";
+    private string Email = "user@demo.email";
 
     protected override void OnInitialized()
     {
-        SidebarItem[] items =
-        [
+        var sidebarItems = new List<SidebarItem>()
+        {
             new()
             {
                 Name = "Dashboard",
                 Path = "/",
-                RequiresExactMatch = true,
                 Icon = "icon-layout-dashboard",
-                Priority = 0
+                RequiresExactMatch = true
             }
-        ];
+        };
 
-        Items = items
+        Items = sidebarItems
+            //.Where(x => x.Permission == null || (x.Permission != null && IdentityService.HasPermission(x.Permission)))
             .GroupBy(x => x.Group ?? "")
             .OrderByDescending(x => string.IsNullOrEmpty(x.Key))
             .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Priority).ToArray());
+
+        Navigation.LocationChanged += OnNavigated;
     }
-    
+
+    private async void OnNavigated(object? sender, LocationChangedEventArgs e)
+    {
+        // No async void without try catch to prevent hard app crashes when async task fails
+        
+        try
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+    }
+
     private Task LogoutAsync()
     {
         Navigation.NavigateTo("/api/auth/logout", true);
@@ -117,5 +124,10 @@
         public string Path { get; set; }
         public string Name { get; set; }
         public bool RequiresExactMatch { get; set; }
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnNavigated;
     }
 }
